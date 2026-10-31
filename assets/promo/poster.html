@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Хатм — обложка</title>
+<style>
+  @font-face {
+    font-family: "Amiri";
+    font-style: normal;
+    font-weight: 400;
+    src: url("fonts/amiri-400.woff2") format("woff2");
+    font-display: block;
+  }
+  @font-face {
+    font-family: "Amiri";
+    font-style: normal;
+    font-weight: 700;
+    src: url("fonts/amiri-700.woff2") format("woff2");
+    font-display: block;
+  }
+
+  :root {
+    --gold: #d8b863;
+    --gold-soft: #b99a4e;
+    --cream: #f4ecd9;
+    --bg-deep: #08110e;
+    --bg-mid: #10211b;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  html, body {
+    background: #05100c;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  #poster {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 50% 0%, #17342a 0%, #0e2019 45%, #08130f 100%);
+    color: var(--cream);
+    font-family: "Georgia", "Times New Roman", serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #poster.wide { width: 1280px; height: 720px; }
+  #poster.square { width: 1080px; height: 1080px; }
+
+  /* Узор из восьмиконечных звёзд */
+  #poster::before {
+    content: "";
+    position: absolute;
+    inset: -60px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'><g fill='none' stroke='%23d8b863' stroke-width='1'><path d='M70 8 84 56 132 70 84 84 70 132 56 84 8 70 56 56Z'/><rect x='40' y='40' width='60' height='60' transform='rotate(45 70 70)'/></g></svg>");
+    background-size: 140px 140px;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+
+  /* Свечение сверху */
+  #poster::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -220px;
+    width: 900px;
+    height: 520px;
+    transform: translateX(-50%);
+    background: radial-gradient(closest-side, rgba(216, 184, 99, 0.16), rgba(216, 184, 99, 0));
+    pointer-events: none;
+  }
+
+  .frame {
+    position: absolute;
+    inset: 30px;
+    border: 1px solid rgba(216, 184, 99, 0.38);
+    pointer-events: none;
+  }
+  .frame::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    border: 1px solid rgba(216, 184, 99, 0.16);
+  }
+  .corner {
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(216, 184, 99, 0.7);
+  }
+  .corner.tl { left: 30px; top: 30px; border-right: none; border-bottom: none; }
+  .corner.tr { right: 30px; top: 30px; border-left: none; border-bottom: none; }
+  .corner.bl { left: 30px; bottom: 30px; border-right: none; border-top: none; }
+  .corner.br { right: 30px; bottom: 30px; border-left: none; border-top: none; }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 90px;
+    width: 100%;
+  }
+
+  .brand {
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 17px;
+    letter-spacing: 0.62em;
+    text-indent: 0.62em;
+    color: var(--gold);
+    text-transform: uppercase;
+    opacity: 0.9;
+  }
+
+  .rule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 22px auto 0;
+    width: 300px;
+    color: rgba(216, 184, 99, 0.75);
+  }
+  .rule span {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(216, 184, 99, 0.6), transparent);
+  }
+  .rule i {
+    width: 7px;
+    height: 7px;
+    background: var(--gold);
+    transform: rotate(45deg);
+    display: block;
+    opacity: 0.85;
+  }
+
+  .arabic {
+    margin-top: 40px;
+    font-family: "Amiri", "Traditional Arabic", "Segoe UI", "Arial", serif;
+    font-size: 126px;
+    line-height: 1.45;
+    direction: rtl;
+    unicode-bidi: isolate;
+    background: linear-gradient(180deg, #f6e6b8 0%, #d8b863 55%, #a8893f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 6px 22px rgba(216, 184, 99, 0.18));
+  }
+
+  .title {
+    margin-top: 26px;
+    font-size: 62px;
+    letter-spacing: 0.22em;
+    text-indent: 0.22em;
+    color: var(--cream);
+    font-weight: 400;
+  }
+
+  .subtitle {
+    margin-top: 20px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 21px;
+    letter-spacing: 0.04em;
+    color: rgba(244, 236, 217, 0.72);
+  }
+
+  .chips {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 17px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cream);
+    padding: 11px 24px;
+    border: 1px solid rgba(216, 184, 99, 0.45);
+    border-radius: 999px;
+    background: rgba(216, 184, 99, 0.06);
+  }
+
+  .footer {
+    margin-top: 44px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.22em;
+    color: rgba(216, 184, 99, 0.72);
+    text-transform: uppercase;
+  }
+
+  /* Квадратная версия */
+  #poster.square .content { padding: 0 100px; }
+  #poster.square .arabic { font-size: 172px; margin-top: 90px; }
+  #poster.square .title { font-size: 78px; margin-top: 44px; }
+  #poster.square .subtitle { font-size: 25px; margin-top: 28px; line-height: 1.5; }
+  #poster.square .chips { margin-top: 62px; gap: 16px; }
+  #poster.square .chip { font-size: 19px; padding: 13px 26px; }
+  #poster.square .footer { margin-top: 70px; font-size: 16px; }
+  #poster.square .rule { margin-top: 30px; width: 360px; }
+</style>
+</head>
+<body>
+  <div id="poster" class="wide">
+    <div class="frame"></div>
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <div class="content">
+      <div class="brand">Хатм</div>
+
+      <div class="rule"><span></span><i></i><span></span></div>
+
+      <div class="arabic">القرآن الكريم</div>
+
+      <div class="title">КОРАН</div>
+
+      <div class="subtitle">Толкование аятов и 40 хадисов имама ан-Навави</div>
+
+      <div class="chips">
+        <div class="chip">Коран</div>
+        <div class="chip">Толкование</div>
+        <div class="chip">Хадисы</div>
+      </div>
+
+      <div class="footer">Читайте с пониманием</div>
+    </div>
+  </div>
+
+  <script>
+    var format = new URLSearchParams(location.search).get("format");
+    var poster = document.getElementById("poster");
+    poster.className = format === "square" ? "square" : "wide";
+  </script>
+</body>
+</html>
