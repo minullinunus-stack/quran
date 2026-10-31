@@ -2,6 +2,7 @@
 android/
 data/
 src/
+bot/
 build.py
 README.md
 .gitignore

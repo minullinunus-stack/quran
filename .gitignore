@@ -11,6 +11,12 @@ android/captures/
 *.keystore
 !android/store/*.png
 
+# Telegram-бот
+bot/node_modules/
+bot/.env
+bot/storage.json
+bot/*.log
+
 # Прочее
 .DS_Store
 Thumbs.db

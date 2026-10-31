@@ -1,0 +1,19 @@
+{
+  "name": "hatam-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Telegram-бот «Хатм»: Коран с тафсиром и 40 хадисов имама ан-Навави",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "check": "node src/index.js --check && node check-ui.js",
+    "check:ui": "node check-ui.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "telegraf": "^4.16.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

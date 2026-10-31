@@ -43,6 +43,12 @@ android/                — Android-проект (WebView-обёртка) для
   app/src/main/res/          — иконки, темы, сплэш
   store/icon-512.png         — иконка 512×512 для карточки в RuStore
   sync-assets.ps1            — копирует сайт в assets перед сборкой
+
+bot/                    — Telegram-бот на Node.js (Telegraf)
+  src/index.js               — запуск, команды, обработчики кнопок
+  src/ui.js                  — тексты и клавиатуры
+  src/data.js                — читает те же data/*.js, что и сайт
+  README.md                  — пошаговая инструкция по запуску
 ```
 
 > Правки интерфейса делайте в `src/app.html`, затем запустите `python build.py` —
@@ -208,12 +214,30 @@ Vercel сам пересоберёт и обновит сайт. Service worker 
 поэтому после крупных правок поднимайте версию в `sw.js` (`hatam-v4` → `hatam-v5`),
 чтобы у пользователей обновился кэш.
 
-На Vercel уходит только готовый сайт: `data/`, `src/`, `android/` исключены
+На Vercel уходит только готовый сайт: `data/`, `src/`, `android/`, `bot/` исключены
 через `.vercelignore`.
 
 ---
 
-## 5. Что можно поменять
+## 5. Telegram-бот
+
+Бот на Node.js (Telegraf) с теми же данными: 114 сур с тафсиром и 40 хадисов.
+
+```powershell
+cd bot
+Copy-Item .env.example .env   # вписать BOT_TOKEN и OWNER_ID
+npm install
+npm run check                 # проверка данных и кнопок, токен не нужен
+npm start                     # запуск
+```
+
+Токен и ID владельца хранятся только в `bot/.env` — файл в `.gitignore`.
+Подробная инструкция (BotFather, @userinfobot, проверка кнопок, хостинг 24/7,
+разбор ошибок): **[bot/README.md](bot/README.md)**.
+
+---
+
+## 6. Что можно поменять
 
 | Что | Где |
 |---|---|
