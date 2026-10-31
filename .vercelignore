@@ -1,0 +1,7 @@
+# Для Vercel нужен только готовый сайт: данные уже встроены в index.html.
+android/
+data/
+src/
+build.py
+README.md
+.gitignore

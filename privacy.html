@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f1b18">
+<title>Политика конфиденциальности — Хатм</title>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<style>
+  :root {
+    --bg: #0f1b18;
+    --card: #1b2f27;
+    --gold: #d4af37;
+    --text: #eaf3ee;
+    --muted: #8ba79a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", "Inter", system-ui, -apple-system, sans-serif;
+    background:
+      radial-gradient(900px 500px at 15% -10%, rgba(212, 175, 55, 0.10), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 32px 18px 64px; }
+  a.back {
+    display: inline-block;
+    margin-bottom: 22px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    padding: 8px 14px;
+  }
+  a.back:hover { color: var(--text); border-color: rgba(212, 175, 55, 0.4); }
+  h1 { font-size: clamp(24px, 5vw, 32px); margin: 0 0 8px; }
+  .updated { color: var(--muted); font-size: 13.5px; margin: 0 0 26px; }
+  .card {
+    background: linear-gradient(160deg, var(--card), #16261f);
+    border: 1px solid rgba(212, 175, 55, 0.18);
+    border-radius: 16px;
+    padding: 22px;
+  }
+  h2 { font-size: 17px; margin: 22px 0 8px; color: var(--gold); }
+  h2:first-child { margin-top: 0; }
+  p, li { font-size: 14.5px; line-height: 1.7; color: #c3d6cc; }
+  ul { padding-left: 20px; margin: 8px 0; }
+  .todo { color: var(--gold); }
+  footer { margin-top: 26px; font-size: 12.5px; color: #6f8a7d; }
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <a class="back" href="index.html">← В приложение</a>
+    <h1>Политика конфиденциальности</h1>
+    <p class="updated">Приложение «Хатм» · обновлено 31 октября 2026 г.</p>
+
+    <div class="card">
+      <h2>Какие данные мы собираем</h2>
+      <p>Никакие. Приложение «Хатм» не собирает, не передаёт и не хранит персональные данные пользователей.</p>
+
+      <h2>Где хранится прогресс</h2>
+      <p>Отметки прочитанных джузов, хадисов и последняя открытая сура сохраняются только на вашем устройстве в локальном хранилище браузера (localStorage). Эти данные никуда не отправляются и удаляются вместе с данными приложения.</p>
+
+      <h2>Сеть и разрешения</h2>
+      <ul>
+        <li>Приложение работает полностью офлайн: текст Корана и хадисов встроен в приложение.</li>
+        <li>Приложение не запрашивает доступ к интернету, камере, микрофону, контактам, геолокации и файлам.</li>
+        <li>Нет аналитики, рекламы, трекеров и сторонних SDK.</li>
+      </ul>
+
+      <h2>Дети</h2>
+      <p>Приложение не содержит пользовательского контента, рекламы и покупок, поэтому подходит для любой аудитории.</p>
+
+      <h2>Изменения</h2>
+      <p>Если политика изменится, новая версия будет опубликована на этой странице.</p>
+
+      <h2>Контакты</h2>
+      <!-- Замените на свою почту перед публикацией в RuStore -->
+      <p>По любым вопросам: <span class="todo">укажите свой e-mail</span></p>
+    </div>
+
+    <footer>
+      Текст Корана: Quran Uthmani, перевод Э. Кулиева. «Сорок хадисов»: перевод Абдуллы Нирши.
+    </footer>
+  </main>
+</body>
+</html>

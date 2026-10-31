@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f1b18">
+<meta name="description" content="Трекер хатма: 30 джузов, полный текст Корана с переводом на русский и 40 хадисов имама ан-Навави.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Хатм">
+<title>Хатм — Коран и 40 хадисов ан-Навави</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+  :root {
+    --bg: #0f1b18;
+    --bg-soft: #16261f;
+    --card: #1b2f27;
+    --card-hover: #22392f;
+    --line: rgba(255, 255, 255, 0.09);
+    --gold: #d4af37;
+    --gold-soft: rgba(212, 175, 55, 0.14);
+    --text: #eaf3ee;
+    --muted: #8ba79a;
+    --done: #2e7d5b;
+    --done-strong: #3fae7d;
+    --radius: 16px;
+    --fs: 1;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", "Inter", system-ui, -apple-system, sans-serif;
+    background:
+      radial-gradient(1000px 600px at 15% -10%, rgba(212, 175, 55, 0.10), transparent 60%),
+      radial-gradient(900px 600px at 100% 0%, rgba(63, 174, 125, 0.10), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 0 16px 72px;
+  }
+
+  /* ── Шапка ── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(15, 27, 24, 0.86);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.14);
+  }
+
+  .topbar-inner {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 12px 16px 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .brand-mark {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 21px;
+    color: var(--gold);
+    background: var(--gold-soft);
+    border: 1px solid rgba(212, 175, 55, 0.28);
+  }
+
+  .brand h1 {
+    margin: 0;
+    font-size: 18px;
+    letter-spacing: 0.4px;
+  }
+
+  .brand p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.2px;
+  }
+
+  .install-btn {
+    margin-left: auto;
+    flex: 0 0 auto;
+    appearance: none;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: #16261f;
+    background: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 10px;
+    padding: 8px 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: filter 0.18s ease, transform 0.16s ease;
+  }
+
+  .install-btn:hover { filter: brightness(1.08); }
+  .install-btn:active { transform: scale(0.97); }
+  .install-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .install-btn[hidden] { display: none; }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 10px;
+  }
+
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 14.5px;
+    padding: 9px 15px;
+    border-radius: 11px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  }
+
+  .tab:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); }
+
+  .tab[aria-selected="true"] {
+    color: #16261f;
+    background: var(--gold);
+    border-color: var(--gold);
+    font-weight: 600;
+  }
+
+  .tab:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  /* ── Общее ── */
+  .view[hidden] { display: none; }
+
+  .lead {
+    margin: 26px 0 18px;
+  }
+
+  .lead h2 {
+    margin: 0 0 6px;
+    font-size: clamp(22px, 4.6vw, 30px);
+    letter-spacing: 0.3px;
+  }
+
+  .lead p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+
+  .card {
+    background: linear-gradient(160deg, var(--card), var(--bg-soft));
+    border: 1px solid rgba(212, 175, 55, 0.18);
+    border-radius: var(--radius);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.26);
+  }
+
+  /* ── Прогресс ── */
+  .progress-card {
+    padding: 20px 22px;
+    margin-bottom: 22px;
+  }
+
+  .progress-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .progress-label {
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 1.3px;
+    color: var(--muted);
+  }
+
+  .progress-value {
+    font-size: clamp(30px, 6vw, 42px);
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .progress-value small {
+    font-size: 0.5em;
+    color: var(--muted);
+    font-weight: 500;
+    margin-left: 2px;
+  }
+
+  .bar {
+    position: relative;
+    height: 11px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--done), var(--done-strong) 60%, var(--gold));
+    transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 0 14px rgba(63, 174, 125, 0.4);
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 11px;
+    font-size: 13px;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+
+  /* ── Сетка джузов ── */
+  .juz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+    gap: 11px;
+  }
+
+  .juz {
+    position: relative;
+    appearance: none;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 14px;
+    padding: 16px 8px 13px;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: center;
+    transition: transform 0.16s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 78px;
+  }
+
+  .juz:hover {
+    background: var(--card-hover);
+    border-color: rgba(212, 175, 55, 0.35);
+    transform: translateY(-2px);
+  }
+
+  .juz:active { transform: translateY(0) scale(0.98); }
+  .juz:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .juz-num {
+    display: block;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .juz-caption {
+    display: block;
+    margin-top: 4px;
+    font-size: 10.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .juz-check {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    line-height: 1;
+    color: transparent;
+    transition: all 0.2s ease;
+  }
+
+  .juz.done {
+    background: linear-gradient(155deg, rgba(46, 125, 91, 0.55), rgba(27, 47, 39, 0.9));
+    border-color: var(--done-strong);
+    box-shadow: 0 6px 20px rgba(46, 125, 91, 0.22), inset 0 0 0 1px rgba(63, 174, 125, 0.22);
+  }
+
+  .juz.done .juz-num { color: #c9f3dd; }
+  .juz.done .juz-caption { color: var(--done-strong); }
+
+  .juz.done .juz-check {
+    background: var(--done-strong);
+    border-color: var(--done-strong);
+    color: #06231a;
+    font-weight: 800;
+  }
+
+  .hatm-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  .hint {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  .btn {
+    appearance: none;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .btn:hover { background: rgba(255, 255, 255, 0.09); border-color: rgba(212, 175, 55, 0.35); }
+  .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .btn.ghost {
+    color: var(--muted);
+    background: transparent;
+  }
+
+  .btn.ghost:hover {
+    color: #ffb4a8;
+    border-color: rgba(255, 120, 100, 0.45);
+    background: rgba(255, 100, 80, 0.08);
+  }
+
+  /* ── Коран ── */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+
+  .search {
+    flex: 1 1 240px;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 0 14px;
+    transition: border-color 0.18s ease;
+  }
+
+  .search:focus-within { border-color: rgba(212, 175, 55, 0.5); }
+  .search svg { flex: 0 0 16px; opacity: 0.55; }
+
+  .search input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    padding: 13px 0;
+  }
+
+  .search input::placeholder { color: #6f8a7d; }
+
+  .surah-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+    gap: 10px;
+  }
+
+  .surah {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    appearance: none;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    padding: 11px 13px;
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.16s ease;
+  }
+
+  .surah:hover {
+    background: var(--card-hover);
+    border-color: rgba(212, 175, 55, 0.32);
+    transform: translateY(-1px);
+  }
+
+  .surah:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .surah-badge {
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--gold-soft);
+    border: 1px solid rgba(212, 175, 55, 0.24);
+    color: var(--gold);
+    font-size: 13.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .surah-text { flex: 1; min-width: 0; }
+
+  .surah-name {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .surah-sub {
+    display: block;
+    margin-top: 2px;
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .surah-ar {
+    flex: 0 0 auto;
+    font-family: "Scheherazade New", "Amiri", "Noto Naskh Arabic", "Traditional Arabic", "Times New Roman", serif;
+    font-size: 20px;
+    color: rgba(212, 175, 55, 0.9);
+    direction: rtl;
+  }
+
+  .reader-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+
+  .reader-title { flex: 1 1 auto; min-width: 0; }
+  .reader-title h2 { margin: 0; font-size: clamp(20px, 4.4vw, 27px); }
+  .reader-title p { margin: 4px 0 0; font-size: 12.5px; color: var(--muted); }
+
+  .bismillah {
+    text-align: center;
+    font-family: "Scheherazade New", "Amiri", "Noto Naskh Arabic", "Traditional Arabic", "Times New Roman", serif;
+    font-size: calc(clamp(22px, 5vw, 30px) * var(--fs));
+    color: var(--gold);
+    padding: 14px 10px 20px;
+    direction: rtl;
+  }
+
+  .ayah {
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .ayah:last-child { border-bottom: 0; }
+
+  .ayah-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .ayah-num {
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(212, 175, 55, 0.12);
+    color: var(--gold);
+    font-size: 11.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ayah-ar {
+    flex: 1;
+    min-width: 0;
+    direction: rtl;
+    text-align: right;
+    font-family: "Scheherazade New", "Amiri", "Noto Naskh Arabic", "Traditional Arabic", "Times New Roman", serif;
+    font-size: calc(clamp(21px, 4.2vw, 26px) * var(--fs));
+    line-height: 2;
+    color: #f2f8f4;
+    word-spacing: 1px;
+  }
+
+  .ayah-ru {
+    margin: 0 0 0 38px;
+    font-size: calc(14.5px * var(--fs));
+    line-height: 1.65;
+    color: #c3d6cc;
+  }
+
+  /* ── Размер текста ── */
+  .text-tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 0 0 14px;
+  }
+
+  .text-tools-label {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .fs-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 3px;
+  }
+
+  .fs-btn {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 8px 11px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background 0.16s ease, color 0.16s ease;
+  }
+
+  .fs-btn:hover:not([disabled]) { background: var(--gold-soft); color: var(--gold); }
+  .fs-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .fs-btn[disabled] { opacity: 0.35; cursor: default; }
+
+  .fs-value {
+    min-width: 48px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .reader-hint {
+    margin: 0 0 14px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  /* ── Тафсир ── */
+  .tafsir { margin: 10px 0 0 38px; }
+
+  .tafsir-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    appearance: none;
+    background: var(--gold-soft);
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    border-radius: 999px;
+    color: var(--gold);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 8px 13px;
+    cursor: pointer;
+    transition: background 0.16s ease;
+  }
+
+  .tafsir-toggle:hover { background: rgba(212, 175, 55, 0.22); }
+  .tafsir-toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .tafsir-toggle .chevron {
+    width: 7px;
+    height: 7px;
+    margin: 0 1px 0 0;
+    border-color: currentColor;
+  }
+
+  .tafsir.open .tafsir-toggle .chevron { transform: rotate(-135deg); }
+
+  .tafsir-body {
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.035);
+    border-left: 2px solid rgba(212, 175, 55, 0.4);
+    border-radius: 0 10px 10px 0;
+  }
+
+  .tafsir-body[hidden] { display: none; }
+
+  .tafsir-text {
+    margin: 0;
+    font-size: calc(14px * var(--fs));
+    line-height: 1.7;
+    color: #c3d6cc;
+  }
+
+  .tafsir-source {
+    display: block;
+    margin-top: 9px;
+    font-size: 11.5px;
+    color: #6f8a7d;
+  }
+
+  .reader-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .reader-nav .btn { flex: 1 1 0; }
+  .reader-nav .btn[disabled] { opacity: 0.35; cursor: default; }
+
+  /* ── Хадисы ── */
+  .hadith-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .hadith {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .hadith.open { border-color: rgba(212, 175, 55, 0.35); background: var(--bg-soft); }
+  .hadith.read { border-color: rgba(63, 174, 125, 0.35); }
+
+  .hadith-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--text);
+    font-family: inherit;
+    padding: 14px 15px;
+    cursor: pointer;
+  }
+
+  .hadith-toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+
+  .hadith-num {
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--gold-soft);
+    border: 1px solid rgba(212, 175, 55, 0.24);
+    color: var(--gold);
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hadith.read .hadith-num {
+    background: rgba(63, 174, 125, 0.16);
+    border-color: rgba(63, 174, 125, 0.4);
+    color: var(--done-strong);
+  }
+
+  .hadith-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 14.5px;
+    line-height: 1.4;
+  }
+
+  .chevron {
+    flex: 0 0 auto;
+    width: 9px;
+    height: 9px;
+    border-right: 2px solid var(--muted);
+    border-bottom: 2px solid var(--muted);
+    transform: rotate(45deg);
+    transition: transform 0.22s ease;
+    margin-right: 3px;
+  }
+
+  .hadith.open .chevron { transform: rotate(-135deg); }
+
+  .hadith-body {
+    padding: 2px 15px 16px;
+  }
+
+  .hadith-body[hidden] { display: none; }
+
+  .hadith-ar {
+    direction: rtl;
+    text-align: right;
+    font-family: "Scheherazade New", "Amiri", "Noto Naskh Arabic", "Traditional Arabic", "Times New Roman", serif;
+    font-size: calc(clamp(19px, 3.8vw, 23px) * var(--fs));
+    line-height: 2;
+    color: #f2f8f4;
+    padding: 12px 0 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    margin-bottom: 13px;
+  }
+
+  .hadith-ru {
+    margin: 0;
+    font-size: calc(14.5px * var(--fs));
+    line-height: 1.7;
+    color: #c3d6cc;
+  }
+
+  .hadith-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 14px;
+  }
+
+  .btn.small { font-size: 13px; padding: 8px 14px; }
+
+  .btn.mark {
+    color: var(--done-strong);
+    border-color: rgba(63, 174, 125, 0.4);
+    background: rgba(63, 174, 125, 0.1);
+  }
+
+  .btn.mark:hover { background: rgba(63, 174, 125, 0.18); }
+
+  .empty {
+    padding: 34px 18px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+  }
+
+  /* ── Уведомление ── */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translate(-50%, 20px);
+    max-width: calc(100vw - 32px);
+    background: rgba(20, 34, 28, 0.97);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    z-index: 60;
+    text-align: center;
+  }
+
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .linkish {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    color: #8ba79a;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+
+  .linkish:hover { color: var(--gold); }
+  .linkish:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+
+  dialog.policy {
+    width: min(560px, calc(100vw - 24px));
+    max-height: calc(100vh - 48px);
+    overflow: auto;
+    background: linear-gradient(160deg, var(--card), var(--bg-soft));
+    color: var(--text);
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  dialog.policy::backdrop { background: rgba(6, 12, 10, 0.72); }
+
+  dialog.policy h2 { margin: 0 0 12px; font-size: 19px; }
+
+  dialog.policy p,
+  dialog.policy li {
+    font-size: 14px;
+    line-height: 1.65;
+    color: #c3d6cc;
+    margin: 0 0 10px;
+  }
+
+  dialog.policy ul { padding-left: 18px; margin: 0 0 10px; }
+  dialog.policy .btn { margin-top: 6px; }
+
+  .footer-note {
+    margin-top: 34px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 12px;
+    color: #6f8a7d;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 0 12px 60px; }
+    .topbar-inner { padding: 10px 12px 0; }
+    .juz-grid { grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 9px; }
+    .juz { padding: 13px 5px 11px; min-height: 72px; }
+    .juz-num { font-size: 19px; }
+    .juz-caption { font-size: 9.5px; letter-spacing: 0.7px; }
+    .progress-card { padding: 17px; }
+    .surah-grid { grid-template-columns: 1fr; }
+    .surah-ar { font-size: 18px; }
+    .ayah-ru { margin-left: 0; }
+    .ayah-ar { font-size: calc(22px * var(--fs)); }
+    .tafsir { margin-left: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">﷽</div>
+      <div>
+        <h1>Хатм</h1>
+        <p>Коран · 30 джузов · 40 хадисов</p>
+      </div>
+      <button class="install-btn" type="button" id="install-btn" hidden>Установить</button>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Разделы">
+      <button class="tab" type="button" role="tab" id="tab-hatm" data-view="hatm" aria-selected="true" aria-controls="view-hatm">Хатм</button>
+      <button class="tab" type="button" role="tab" id="tab-quran" data-view="quran" aria-selected="false" aria-controls="view-quran">Коран</button>
+      <button class="tab" type="button" role="tab" id="tab-hadiths" data-view="hadiths" aria-selected="false" aria-controls="view-hadiths">Хадисы</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ══ ХАТМ ══ -->
+  <section class="view" id="view-hatm" role="tabpanel" aria-labelledby="tab-hatm">
+    <div class="lead">
+      <h2>Трекер хатма</h2>
+      <p>Отмечайте прочитанные джузы — прогресс сохраняется автоматически.</p>
+    </div>
+
+    <div class="card progress-card">
+      <div class="progress-top">
+        <span class="progress-label" id="hatm-label">Прогресс хатма</span>
+        <span class="progress-value" id="hatm-value" aria-live="polite">0<small>%</small></span>
+      </div>
+      <div class="bar" role="progressbar" id="hatm-bar" aria-labelledby="hatm-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="bar-fill" id="hatm-fill"></div>
+      </div>
+      <div class="progress-meta">
+        <span id="hatm-done">Прочитано: 0 из 30 джузов</span>
+        <span id="hatm-left">Осталось: 30</span>
+      </div>
+    </div>
+
+    <div class="juz-grid" id="juz-grid" aria-label="Джузы Корана"></div>
+
+    <div class="hatm-footer">
+      <p class="hint">Нажмите на клетку, чтобы отметить джуз. Повторное нажатие снимает отметку.</p>
+      <button class="btn ghost" type="button" id="hatm-reset">Сбросить прогресс</button>
+    </div>
+  </section>
+
+  <!-- ══ КОРАН ══ -->
+  <section class="view" id="view-quran" role="tabpanel" aria-labelledby="tab-quran" hidden>
+    <div class="lead">
+      <h2>Коран</h2>
+      <p>114 сур: арабский текст и перевод на русский язык (Э. Кулиев).</p>
+    </div>
+
+    <div id="quran-list">
+      <div class="toolbar">
+        <label class="search" for="surah-search">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+          <input id="surah-search" type="search" placeholder="Найти суру по названию или номеру" autocomplete="off">
+        </label>
+        <button class="btn" type="button" id="quran-continue" hidden>Продолжить чтение</button>
+      </div>
+      <div class="surah-grid" id="surah-grid"></div>
+      <div class="empty" id="surah-empty" hidden>Ничего не найдено</div>
+    </div>
+
+    <div id="quran-reader" hidden>
+      <div class="reader-head">
+        <button class="btn small" type="button" id="reader-back">← К списку сур</button>
+        <div class="reader-title">
+          <h2 id="reader-name">Сура</h2>
+          <p id="reader-meta"></p>
+        </div>
+      </div>
+      <div class="text-tools">
+        <span class="text-tools-label">Размер текста</span>
+        <div class="fs-group" role="group" aria-label="Размер текста">
+          <button class="fs-btn" type="button" data-fs="-1" aria-label="Уменьшить текст">A−</button>
+          <span class="fs-value" aria-live="polite">100%</span>
+          <button class="fs-btn" type="button" data-fs="1" aria-label="Увеличить текст">A+</button>
+        </div>
+      </div>
+      <p class="reader-hint">Под аятом нажмите «Тафсир», чтобы открыть толкование и свернуть его стрелкой. Тафсир: Ас-Саади, перевод на русский.</p>
+      <div class="card" style="padding: 6px 18px 14px;">
+        <div class="bismillah" id="reader-bism">﷽</div>
+        <div id="reader-ayahs"></div>
+      </div>
+      <div class="reader-nav">
+        <button class="btn" type="button" id="reader-prev">← Предыдущая</button>
+        <button class="btn" type="button" id="reader-next">Следующая →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ХАДИСЫ ══ -->
+  <section class="view" id="view-hadiths" role="tabpanel" aria-labelledby="tab-hadiths" hidden>
+    <div class="lead">
+      <h2>40 хадисов имама ан-Навави</h2>
+      <p>Сборник «аль-Арбаун ан-Нававия» — 42 хадиса: арабский текст и перевод Абдуллы Нирши.</p>
+    </div>
+
+    <div class="card progress-card">
+      <div class="progress-top">
+        <span class="progress-label" id="had-label">Прочитано хадисов</span>
+        <span class="progress-value" id="had-value" aria-live="polite">0<small>%</small></span>
+      </div>
+      <div class="bar" role="progressbar" id="had-bar" aria-labelledby="had-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="bar-fill" id="had-fill"></div>
+      </div>
+      <div class="progress-meta">
+        <span id="had-done">Прочитано: 0 из 42</span>
+        <span id="had-left">Осталось: 42</span>
+      </div>
+    </div>
+
+    <div class="text-tools">
+      <span class="text-tools-label">Размер текста</span>
+      <div class="fs-group" role="group" aria-label="Размер текста">
+        <button class="fs-btn" type="button" data-fs="-1" aria-label="Уменьшить текст">A−</button>
+        <span class="fs-value" aria-live="polite">100%</span>
+        <button class="fs-btn" type="button" data-fs="1" aria-label="Увеличить текст">A+</button>
+      </div>
+    </div>
+
+    <div class="hadith-list" id="hadith-list"></div>
+  </section>
+
+  <p class="footer-note">
+    Текст Корана: Quran Uthmani, перевод Э. Кулиева (api.alquran.cloud).<br>
+    «Сорок хадисов»: перевод с арабского Абдуллы Нирши, издание подготовил Фарук Абу Хамид.<br>
+    Тафсир: Ас-Саади, перевод на русский (quran.com).<br>
+    <button class="linkish" type="button" id="policy-open">Политика конфиденциальности</button>
+  </p>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog class="policy" id="policy" aria-labelledby="policy-title">
+  <h2 id="policy-title">Политика конфиденциальности</h2>
+  <p>Приложение «Хатм» не собирает, не передаёт и не хранит персональные данные.</p>
+  <p>Отметки прочитанных джузов и хадисов, а также последняя открытая сура сохраняются только на вашем устройстве и никуда не отправляются.</p>
+  <ul>
+    <li>Приложение работает офлайн, без рекламы и аналитики.</li>
+    <li>Не запрашивает доступ к интернету, камере, микрофону, контактам, геолокации и файлам.</li>
+    <li>Не содержит пользовательского контента и покупок.</li>
+  </ul>
+  <p>Текст Корана: Quran Uthmani, перевод Э. Кулиева. «Сорок хадисов»: перевод Абдуллы Нирши.</p>
+  <button class="btn" type="button" id="policy-close">Закрыть</button>
+</dialog>
+
+<!-- QURAN_DATA -->
+<!-- HADITHS_DATA -->
+<!-- TAFSIR_DATA -->
+<script>
+(function () {
+  "use strict";
+
+  var TOTAL_JUZ = 30;
+  var K_HATM = "hatm.juz.v1";
+  var K_HADITH = "hatm.hadiths.v1";
+  var K_LAST = "hatm.lastSurah.v1";
+  var K_FS = "hatm.fontScale.v1";
+
+  var QURAN = window.QURAN_DATA || null;
+  var HADITHS = window.HADITHS_DATA || null;
+  var TAFSIR = window.TAFSIR_DATA || null;
+
+  var toastEl = document.getElementById("toast");
+  var toastTimer = null;
+
+  function showToast(message) {
+    toastEl.textContent = message;
+    toastEl.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 2600);
+  }
+
+  function loadJSON(key, fallback) {
+    try {
+      var raw = localStorage.getItem(key);
+      if (!raw) return fallback;
+      var parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? parsed : fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  function saveJSON(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+      showToast("Не удалось сохранить данные в браузере");
+    }
+  }
+
+  /* ═══════════ Размер текста ═══════════ */
+  var FS_STEPS = [0.85, 1, 1.15, 1.3, 1.45, 1.6, 1.8, 2];
+  var fsSaved = loadJSON(K_FS, { v: 1 });
+  var fsIndex = FS_STEPS.indexOf(Number(fsSaved.v));
+  if (fsIndex < 0) fsIndex = 1;
+
+  function applyFontScale() {
+    var scale = FS_STEPS[fsIndex];
+    document.documentElement.style.setProperty("--fs", String(scale));
+
+    var label = Math.round(scale * 100) + "%";
+    Array.prototype.forEach.call(document.querySelectorAll(".fs-value"), function (el) {
+      el.textContent = label;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".fs-btn"), function (btn) {
+      btn.disabled = Number(btn.dataset.fs) < 0
+        ? fsIndex === 0
+        : fsIndex === FS_STEPS.length - 1;
+    });
+
+    saveJSON(K_FS, { v: scale });
+  }
+
+  document.addEventListener("click", function (event) {
+    var btn = event.target.closest ? event.target.closest(".fs-btn") : null;
+    if (!btn) return;
+    var next = fsIndex + (Number(btn.dataset.fs) > 0 ? 1 : -1);
+    if (next < 0 || next >= FS_STEPS.length) return;
+    fsIndex = next;
+    applyFontScale();
+    showToast("Размер текста: " + Math.round(FS_STEPS[fsIndex] * 100) + "%");
+  });
+
+  /* ═══════════ ХАТМ ═══════════ */
+  var hatm = loadJSON(K_HATM, {});
+  var juzButtons = [];
+  var juzGrid = document.getElementById("juz-grid");
+  var hatmValue = document.getElementById("hatm-value");
+  var hatmFill = document.getElementById("hatm-fill");
+  var hatmBar = document.getElementById("hatm-bar");
+  var hatmDone = document.getElementById("hatm-done");
+  var hatmLeft = document.getElementById("hatm-left");
+
+  function buildJuz() {
+    var frag = document.createDocumentFragment();
+    for (var i = 1; i <= TOTAL_JUZ; i++) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "juz";
+      btn.dataset.juz = String(i);
+      btn.setAttribute("aria-pressed", "false");
+
+      var check = document.createElement("span");
+      check.className = "juz-check";
+      check.setAttribute("aria-hidden", "true");
+      check.textContent = "✓";
+
+      var num = document.createElement("span");
+      num.className = "juz-num";
+      num.textContent = String(i);
+
+      var cap = document.createElement("span");
+      cap.className = "juz-caption";
+      cap.textContent = "джуз";
+
+      btn.appendChild(check);
+      btn.appendChild(num);
+      btn.appendChild(cap);
+      frag.appendChild(btn);
+      juzButtons.push(btn);
+    }
+    juzGrid.appendChild(frag);
+  }
+
+  function renderHatm() {
+    var done = 0;
+    for (var i = 1; i <= TOTAL_JUZ; i++) {
+      var isDone = hatm[i] === true;
+      if (isDone) done++;
+      var btn = juzButtons[i - 1];
+      btn.classList.toggle("done", isDone);
+      btn.setAttribute("aria-pressed", isDone ? "true" : "false");
+      btn.setAttribute("aria-label", "Джуз " + i + (isDone ? " — прочитан" : " — не прочитан"));
+    }
+    var percent = Math.round((done / TOTAL_JUZ) * 100);
+    hatmValue.innerHTML = percent + "<small>%</small>";
+    hatmFill.style.width = percent + "%";
+    hatmBar.setAttribute("aria-valuenow", String(percent));
+    hatmDone.textContent = "Прочитано: " + done + " из " + TOTAL_JUZ + " джузов";
+    hatmLeft.textContent = "Осталось: " + (TOTAL_JUZ - done);
+  }
+
+  juzGrid.addEventListener("click", function (event) {
+    var btn = event.target.closest(".juz");
+    if (!btn) return;
+    var index = Number(btn.dataset.juz);
+    if (!Number.isInteger(index) || index < 1 || index > TOTAL_JUZ) return;
+    if (hatm[index] === true) delete hatm[index];
+    else hatm[index] = true;
+    saveJSON(K_HATM, hatm);
+    renderHatm();
+    if (Object.keys(hatm).length === TOTAL_JUZ && hatm[index] === true) {
+      showToast("Хатм завершён — да примет Аллах!");
+    }
+  });
+
+  document.getElementById("hatm-reset").addEventListener("click", function () {
+    if (Object.keys(hatm).length === 0) { showToast("Пока нечего сбрасывать"); return; }
+    if (!window.confirm("Сбросить весь прогресс хатма?")) return;
+    hatm = {};
+    saveJSON(K_HATM, hatm);
+    renderHatm();
+    showToast("Прогресс сброшен");
+  });
+
+  /* ═══════════ КОРАН ═══════════ */
+  var surahGrid = document.getElementById("surah-grid");
+  var surahSearch = document.getElementById("surah-search");
+  var surahEmpty = document.getElementById("surah-empty");
+  var quranList = document.getElementById("quran-list");
+  var quranReader = document.getElementById("quran-reader");
+  var readerName = document.getElementById("reader-name");
+  var readerMeta = document.getElementById("reader-meta");
+  var readerBism = document.getElementById("reader-bism");
+  var readerAyahs = document.getElementById("reader-ayahs");
+  var continueBtn = document.getElementById("quran-continue");
+  var currentSurah = 0;
+
+  function surahTitle(s) { return s.ru; }
+
+  function buildSurahList() {
+    if (!QURAN) {
+      surahGrid.innerHTML = '<div class="empty">Не удалось загрузить текст Корана (нет файла data/quran.js)</div>';
+      return;
+    }
+    var frag = document.createDocumentFragment();
+    QURAN.surahs.forEach(function (s) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "surah";
+      btn.dataset.n = String(s.n);
+      btn.dataset.search = (s.n + " " + s.ru + " " + s.meaning + " " + s.ar).toLowerCase();
+
+      var badge = document.createElement("span");
+      badge.className = "surah-badge";
+      badge.textContent = String(s.n);
+
+      var text = document.createElement("span");
+      text.className = "surah-text";
+      var name = document.createElement("span");
+      name.className = "surah-name";
+      name.textContent = s.ru;
+      var sub = document.createElement("span");
+      sub.className = "surah-sub";
+      sub.textContent = s.meaning + " · " + s.ay.length + " аятов";
+      text.appendChild(name);
+      text.appendChild(sub);
+
+      var ar = document.createElement("span");
+      ar.className = "surah-ar";
+      ar.setAttribute("aria-hidden", "true");
+      ar.textContent = s.ar;
+
+      btn.appendChild(badge);
+      btn.appendChild(text);
+      btn.appendChild(ar);
+      frag.appendChild(btn);
+    });
+    surahGrid.appendChild(frag);
+  }
+
+  function filterSurahs() {
+    var q = surahSearch.value.trim().toLowerCase();
+    var visible = 0;
+    var items = surahGrid.children;
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      var match = !q || item.dataset.search.indexOf(q) !== -1;
+      item.hidden = !match;
+      if (match) visible++;
+    }
+    surahEmpty.hidden = visible !== 0;
+  }
+
+  function tafsirFor(surah, ayah) {
+    if (!TAFSIR || !TAFSIR.chapters) return "";
+    var chapter = TAFSIR.chapters[surah - 1];
+    if (!chapter) return "";
+    return chapter[ayah - 1] || "";
+  }
+
+  function buildTafsir(surah, ayah, text) {
+    var box = document.createElement("div");
+    box.className = "tafsir";
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "tafsir-toggle";
+    btn.setAttribute("aria-expanded", "false");
+
+    var label = document.createElement("span");
+    label.textContent = "Тафсир";
+
+    var chev = document.createElement("span");
+    chev.className = "chevron";
+    chev.setAttribute("aria-hidden", "true");
+
+    btn.appendChild(label);
+    btn.appendChild(chev);
+
+    var body = document.createElement("div");
+    body.className = "tafsir-body";
+    body.hidden = true;
+
+    btn.addEventListener("click", function () {
+      var open = box.classList.toggle("open");
+      if (open && !body.firstChild) {
+        var p = document.createElement("p");
+        p.className = "tafsir-text";
+        p.textContent = text;
+        body.appendChild(p);
+      }
+      body.hidden = !open;
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+
+    box.appendChild(btn);
+    box.appendChild(body);
+    return box;
+  }
+
+  function openSurah(n, push) {
+    if (!QURAN) return;
+    var s = QURAN.surahs[n - 1];
+    if (!s) return;
+    currentSurah = n;
+
+    readerName.textContent = "Сура " + s.n + ". " + s.ru;
+    readerMeta.textContent = s.meaning + " · " + s.ay.length + " аятов · " + s.rev;
+    readerBism.textContent = QURAN.bism;
+    readerBism.hidden = (n === 1 || n === 9);
+
+    var frag = document.createDocumentFragment();
+    s.ay.forEach(function (pair, idx) {
+      var wrap = document.createElement("div");
+      wrap.className = "ayah";
+
+      var top = document.createElement("div");
+      top.className = "ayah-top";
+
+      var num = document.createElement("span");
+      num.className = "ayah-num";
+      num.textContent = String(idx + 1);
+
+      var ar = document.createElement("div");
+      ar.className = "ayah-ar";
+      ar.lang = "ar";
+      ar.dir = "rtl";
+      ar.textContent = pair[0];
+
+      top.appendChild(num);
+      top.appendChild(ar);
+
+      var ru = document.createElement("p");
+      ru.className = "ayah-ru";
+      ru.lang = "ru";
+      ru.textContent = pair[1];
+
+      wrap.appendChild(top);
+      wrap.appendChild(ru);
+
+      var tafsirText = tafsirFor(n, idx + 1);
+      if (tafsirText) wrap.appendChild(buildTafsir(n, idx + 1, tafsirText));
+
+      frag.appendChild(wrap);
+    });
+    readerAyahs.textContent = "";
+    readerAyahs.appendChild(frag);
+
+    document.getElementById("reader-prev").disabled = n <= 1;
+    document.getElementById("reader-next").disabled = n >= QURAN.surahs.length;
+
+    quranList.hidden = true;
+    quranReader.hidden = false;
+    saveJSON(K_LAST, { n: n });
+    updateContinue();
+    if (push) location.hash = "quran/" + n;
+    window.scrollTo(0, 0);
+  }
+
+  function closeSurah(push) {
+    quranReader.hidden = true;
+    quranList.hidden = false;
+    if (push) location.hash = "quran";
+  }
+
+  function updateContinue() {
+    if (!QURAN) { continueBtn.hidden = true; return; }
+    var last = loadJSON(K_LAST, null);
+    if (last && last.n >= 1 && last.n <= 114) {
+      continueBtn.hidden = false;
+      continueBtn.textContent = "Продолжить: " + QURAN.surahs[last.n - 1].ru;
+    } else {
+      continueBtn.hidden = true;
+    }
+  }
+
+  surahGrid.addEventListener("click", function (event) {
+    var btn = event.target.closest(".surah");
+    if (!btn) return;
+    openSurah(Number(btn.dataset.n), true);
+  });
+
+  surahSearch.addEventListener("input", filterSurahs);
+
+  continueBtn.addEventListener("click", function () {
+    var last = loadJSON(K_LAST, null);
+    if (last) openSurah(last.n, true);
+  });
+
+  document.getElementById("reader-back").addEventListener("click", function () { closeSurah(true); });
+  document.getElementById("reader-prev").addEventListener("click", function () {
+    if (currentSurah > 1) openSurah(currentSurah - 1, true);
+  });
+  document.getElementById("reader-next").addEventListener("click", function () {
+    if (currentSurah < 114) openSurah(currentSurah + 1, true);
+  });
+
+  /* ═══════════ ХАДИСЫ ═══════════ */
+  var hadList = document.getElementById("hadith-list");
+  var hadValue = document.getElementById("had-value");
+  var hadFill = document.getElementById("had-fill");
+  var hadBar = document.getElementById("had-bar");
+  var hadDone = document.getElementById("had-done");
+  var hadLeft = document.getElementById("had-left");
+  var readMap = loadJSON(K_HADITH, {});
+  var hadTotal = HADITHS ? HADITHS.length : 42;
+
+  function renderHadithProgress() {
+    var done = 0;
+    for (var key in readMap) {
+      if (readMap[key] === true) done++;
+    }
+    var percent = hadTotal ? Math.round((done / hadTotal) * 100) : 0;
+    hadValue.innerHTML = percent + "<small>%</small>";
+    hadFill.style.width = percent + "%";
+    hadBar.setAttribute("aria-valuenow", String(percent));
+    hadDone.textContent = "Прочитано: " + done + " из " + hadTotal;
+    hadLeft.textContent = "Осталось: " + (hadTotal - done);
+  }
+
+  function setRead(n, value, card, button) {
+    if (value) readMap[n] = true;
+    else delete readMap[n];
+    saveJSON(K_HADITH, readMap);
+    card.classList.toggle("read", value);
+    button.textContent = value ? "Прочитан ✓" : "Отметить прочитанным";
+    button.classList.toggle("mark", !value);
+    renderHadithProgress();
+  }
+
+  function buildHadiths() {
+    if (!HADITHS) {
+      hadList.innerHTML = '<div class="empty">Не удалось загрузить хадисы (нет файла data/hadiths.js)</div>';
+      return;
+    }
+    var frag = document.createDocumentFragment();
+    HADITHS.forEach(function (h) {
+      var card = document.createElement("article");
+      card.className = "hadith";
+      card.dataset.n = String(h.n);
+
+      var toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "hadith-toggle";
+      toggle.setAttribute("aria-expanded", "false");
+
+      var num = document.createElement("span");
+      num.className = "hadith-num";
+      num.textContent = String(h.n);
+
+      var name = document.createElement("span");
+      name.className = "hadith-name";
+      name.textContent = h.title;
+
+      var chev = document.createElement("span");
+      chev.className = "chevron";
+      chev.setAttribute("aria-hidden", "true");
+
+      toggle.appendChild(num);
+      toggle.appendChild(name);
+      toggle.appendChild(chev);
+
+      var body = document.createElement("div");
+      body.className = "hadith-body";
+      body.hidden = true;
+
+      if (h.ar) {
+        var ar = document.createElement("div");
+        ar.className = "hadith-ar";
+        ar.lang = "ar";
+        ar.dir = "rtl";
+        ar.textContent = h.ar;
+        body.appendChild(ar);
+      }
+
+      var ru = document.createElement("p");
+      ru.className = "hadith-ru";
+      ru.textContent = h.ru;
+      body.appendChild(ru);
+
+      var actions = document.createElement("div");
+      actions.className = "hadith-actions";
+      var mark = document.createElement("button");
+      mark.type = "button";
+      mark.className = "btn small mark";
+      mark.textContent = "Отметить прочитанным";
+      actions.appendChild(mark);
+      body.appendChild(actions);
+
+      toggle.addEventListener("click", function () {
+        var open = card.classList.toggle("open");
+        body.hidden = !open;
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+
+      mark.addEventListener("click", function () {
+        setRead(h.n, !(readMap[h.n] === true), card, mark);
+        if (readMap[h.n] === true) showToast("Хадис " + h.n + " отмечен");
+      });
+
+      card.appendChild(toggle);
+      card.appendChild(body);
+      frag.appendChild(card);
+
+      if (readMap[h.n] === true) {
+        card.classList.add("read");
+        mark.textContent = "Прочитан ✓";
+        mark.classList.remove("mark");
+      }
+    });
+    hadList.appendChild(frag);
+  }
+
+  /* ═══════════ Роутинг ═══════════ */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+  var views = {
+    hatm: document.getElementById("view-hatm"),
+    quran: document.getElementById("view-quran"),
+    hadiths: document.getElementById("view-hadiths")
+  };
+
+  function activate(view, push) {
+    if (!views[view]) view = "hatm";
+    Object.keys(views).forEach(function (key) {
+      var active = key === view;
+      views[key].hidden = !active;
+      var tab = document.getElementById("tab-" + key);
+      tab.setAttribute("aria-selected", active ? "true" : "false");
+      tab.tabIndex = active ? 0 : -1;
+    });
+    if (view !== "quran") {
+      quranReader.hidden = true;
+      quranList.hidden = false;
+    }
+    if (push && location.hash.indexOf(view) !== 0) location.hash = view;
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      activate(tab.dataset.view, true);
+      window.scrollTo(0, 0);
+    });
+  });
+
+  function route() {
+    var hash = location.hash.replace(/^#\/?/, "");
+    var parts = hash.split("/");
+    var view = parts[0] || "hatm";
+    if (view === "quran" && parts[1]) {
+      activate("quran", false);
+      var n = Number(parts[1]);
+      if (n >= 1 && n <= 114) openSurah(n, false);
+      return;
+    }
+    if (view === "hadiths" && parts[1]) {
+      activate("hadiths", false);
+      var card = hadList.querySelector('.hadith[data-n="' + Number(parts[1]) + '"]');
+      if (card && !card.classList.contains("open")) card.querySelector(".hadith-toggle").click();
+      return;
+    }
+    activate(view, false);
+  }
+
+  window.addEventListener("hashchange", route);
+
+  /* ═══════════ Старт ═══════════ */
+  buildJuz();
+  renderHatm();
+  buildSurahList();
+  buildHadiths();
+  renderHadithProgress();
+  updateContinue();
+  applyFontScale();
+  route();
+
+  /* ═══════════ Политика конфиденциальности ═══════════ */
+  var policy = document.getElementById("policy");
+  document.getElementById("policy-open").addEventListener("click", function () {
+    if (typeof policy.showModal === "function") policy.showModal();
+  });
+  document.getElementById("policy-close").addEventListener("click", function () {
+    policy.close();
+  });
+  policy.addEventListener("click", function (event) {
+    if (event.target === policy) policy.close();
+  });
+
+  /* ═══════════ Установка приложения (PWA) ═══════════ */
+  var installBtn = document.getElementById("install-btn");
+  var deferredPrompt = null;
+  var standalone = window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
+
+  if (standalone) installBtn.hidden = true;
+
+  window.addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault();
+    deferredPrompt = event;
+    installBtn.hidden = false;
+  });
+
+  window.addEventListener("appinstalled", function () {
+    installBtn.hidden = true;
+    deferredPrompt = null;
+    showToast("Приложение установлено");
+  });
+
+  installBtn.addEventListener("click", function () {
+    if (!deferredPrompt) {
+      showToast("Меню браузера → «Установить приложение»");
+      return;
+    }
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function (choice) {
+      if (choice.outcome === "accepted") installBtn.hidden = true;
+      deferredPrompt = null;
+    });
+  });
+
+  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
+})();
+</script>
+</body>
+</html>
