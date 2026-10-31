@@ -164,8 +164,8 @@ powershell -ExecutionPolicy Bypass -File .\sync-assets.ps1
    - **Возрастной рейтинг:** 0+
    - **Иконка:** `android/store/icon-512.png` (512×512 PNG)
    - **Скриншоты:** минимум 2 (сделайте с телефона: трекер, список сур, чтение суры, хадисы)
-   - **Политика конфиденциальности:** ссылка на `privacy.html`, размещённую в интернете
-     (GitHub Pages, свой домен и т. п.). Не забудьте заменить e-mail в `privacy.html`.
+   - **Политика конфиденциальности:** https://hatam-mauve.vercel.app/privacy.html
+     (не забудьте заменить e-mail в `privacy.html` перед публикацией).
 4. Отправить на модерацию (обычно 1–3 рабочих дня).
 
 Требования магазина периодически меняются (минимальный `targetSdk`, форматы файлов) —
@@ -186,7 +186,34 @@ powershell -ExecutionPolicy Bypass -File .\sync-assets.ps1
 
 ---
 
-## 4. Что можно поменять
+## 4. Публикация в интернете (GitHub + Vercel)
+
+- **Сайт:** https://hatam-mauve.vercel.app
+- **Репозиторий:** https://github.com/minullinunus-stack/quran
+- **Хостинг:** Vercel, проект `hatam`, продакшн-ветка `master`.
+
+Репозиторий подключён к Vercel: каждый push в `master` автоматически запускает
+новый деплой (обычно 1–2 минуты). После правок сайта:
+
+```powershell
+cd D:\projects\hatam
+python build.py
+powershell -ExecutionPolicy Bypass -File .\android\sync-assets.ps1
+git add -A
+git commit -m "Что изменилось"
+git push
+```
+
+Vercel сам пересоберёт и обновит сайт. Service worker кэширует приложение,
+поэтому после крупных правок поднимайте версию в `sw.js` (`hatam-v4` → `hatam-v5`),
+чтобы у пользователей обновился кэш.
+
+На Vercel уходит только готовый сайт: `data/`, `src/`, `android/` исключены
+через `.vercelignore`.
+
+---
+
+## 5. Что можно поменять
 
 | Что | Где |
 |---|---|
@@ -194,6 +221,7 @@ powershell -ExecutionPolicy Bypass -File .\sync-assets.ps1
 | Название и иконка приложения | `android/app/src/main/res/values/strings.xml`, `res/mipmap-*` |
 | `applicationId`, версия, SDK | `android/app/build.gradle.kts` |
 | Текст Корана и хадисов | `data/quran.js`, `data/hadiths.js`, затем `python build.py` |
+| Тафсир | `data/tafsir.js`, затем `python build.py` |
 
 ---
 
@@ -202,3 +230,4 @@ powershell -ExecutionPolicy Bypass -File .\sync-assets.ps1
 - Коран: Quran Uthmani + перевод Эльмира Кулиева (api.alquran.cloud).
 - «Сорок хадисов» имама ан-Навави: перевод с арабского Абдуллы Нирши,
   издание подготовил Фарук Абу Хамид.
+- Тафсир: Ас-Саади, перевод на русский (quran.com, resource 170).
