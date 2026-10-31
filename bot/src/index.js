@@ -373,7 +373,30 @@ bot.telegram
     console.log("✅ Бот запущен. Нажмите Ctrl+C, чтобы остановить.");
   })
   .catch((error) => {
-    console.error("❌ Не удалось запустить бота:", error.message);
+    const message = String((error && error.message) || error);
+    const code = error && error.response && error.response.error_code;
+
+    console.error("❌ Не удалось запустить бота:", message);
+
+    if (code === 401 || message.includes("401")) {
+      console.error(
+        "\nПодсказка: Telegram не принял токен.\n" +
+          "  • проверьте, что в bot/.env строка BOT_TOKEN= скопирована целиком;\n" +
+          "  • если токен отозван — получите новый у @BotFather (/revoke)."
+      );
+    } else if (code === 409 || message.includes("409")) {
+      console.error(
+        "\nПодсказка: этот бот уже запущен в другом окне или на другом компьютере.\n" +
+          "  Остановите лишний экземпляр и запустите снова."
+      );
+    } else if (/ETIMEDOUT|ENOTFOUND|EAI_AGAIN|ECONNREFUSED|ECONNRESET/.test(message)) {
+      console.error(
+        "\nПодсказка: нет связи с api.telegram.org.\n" +
+          "  Проверьте интернет. Если Telegram открывается только через VPN —\n" +
+          "  включите VPN и запустите бота снова."
+      );
+    }
+
     process.exit(1);
   });
 

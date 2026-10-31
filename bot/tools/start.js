@@ -93,27 +93,54 @@ function runBot() {
   });
 }
 
+function hasToken() {
+  const token = readEnvValue("BOT_TOKEN");
+  return Boolean(token) && !/ExampleTokenReplaceMe/i.test(token);
+}
+
+function askForToken() {
+  console.log(
+    "⚠️  В файле .env ещё нет токена бота.\n\n" +
+      "Что делать:\n" +
+      "  1. Откройте в Telegram @BotFather → /newbot → придумайте имя и username.\n" +
+      "  2. BotFather пришлёт строку вида 123456789:AAH... — это токен.\n" +
+      "  3. Вставьте её в .env после BOT_TOKEN= (без пробелов и кавычек).\n" +
+      "  4. Узнайте свой ID у @userinfobot и вставьте после OWNER_ID=.\n" +
+      "  5. Сохраните файл: Ctrl+S. Затем закройте Блокнот — бот запустится сам.\n\n" +
+      "Открываю .env в Блокноте…\n"
+  );
+
+  openInEditor(ENV_PATH);
+
+  if (!hasToken()) {
+    console.log(
+      "\n⚠️  Токен в .env так и не появился.\n" +
+        "Проверьте, что вставили строку после BOT_TOKEN= и нажали Ctrl+S.\n" +
+        "Если Блокнот не открылся — откройте файл .env в папке bot вручную.\n"
+    );
+    process.exit(1);
+  }
+
+  console.log("\n✅ Токен найден.\n");
+}
+
 function main() {
   console.log("🌙 Хатм — Telegram-бот\n");
 
   ensureEnvFile();
 
+  if (!hasToken()) {
+    askForToken();
+  }
+
   const token = readEnvValue("BOT_TOKEN");
   const owner = readEnvValue("OWNER_ID");
 
-  if (!token || /ExampleTokenReplaceMe/i.test(token)) {
+  if (!/^\d{5,}:[A-Za-z0-9_-]{30,}$/.test(token)) {
     console.log(
-      "⚠️  В файле .env ещё нет токена бота.\n\n" +
-        "Что делать:\n" +
-        "  1. Откройте в Telegram @BotFather → /newbot → придумайте имя и username.\n" +
-        "  2. BotFather пришлёт строку вида 123456789:AAH... — это токен.\n" +
-        "  3. Вставьте её в .env после BOT_TOKEN=\n" +
-        "  4. Узнайте свой ID у @userinfobot и вставьте после OWNER_ID=\n" +
-        "  5. Сохраните файл (Ctrl+S), закройте Блокнот и запустите start.bat снова.\n\n" +
-        "Сейчас открою .env в Блокноте.\n"
+      "⚠️  Токен выглядит необычно — возможно, скопирован не полностью.\n" +
+        "    Правильный вид: 123456789:AAH-длинный_набор_букв_и_цифр\n\n"
     );
-    openInEditor(ENV_PATH);
-    process.exit(1);
   }
 
   if (!owner) {
