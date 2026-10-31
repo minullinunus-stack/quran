@@ -359,8 +359,34 @@ bot.catch((error, ctx) => {
 
 /* ── Запуск ── */
 
-bot.telegram
-  .getMe()
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const NETWORK_ERROR = /ETIMEDOUT|ENOTFOUND|EAI_AGAIN|ECONNREFUSED|ECONNRESET|socket hang up|network|fetch failed/i;
+
+/**
+ * Связь с Telegram бывает нестабильной (особенно без VPN),
+ * поэтому первые подключения повторяем несколько раз.
+ */
+async function getMeWithRetry(attempts = 6) {
+  const delays = [2, 4, 6, 8, 10, 12];
+
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      return await bot.telegram.getMe();
+    } catch (error) {
+      const message = String((error && error.message) || error);
+      if (attempt === attempts || !NETWORK_ERROR.test(message)) throw error;
+
+      const wait = delays[attempt - 1] || 12;
+      console.log(
+        "⏳ Telegram не отвечает (попытка " + attempt + " из " + attempts + "). Повторю через " + wait + " с…"
+      );
+      await sleep(wait * 1000);
+    }
+  }
+}
+
+getMeWithRetry()
   .then((me) => {
     console.log("🤖 Бот: @" + me.username + " (" + me.first_name + ")");
     console.log("👥 Пользователей в базе: " + store.users.length);
@@ -389,11 +415,12 @@ bot.telegram
         "\nПодсказка: этот бот уже запущен в другом окне или на другом компьютере.\n" +
           "  Остановите лишний экземпляр и запустите снова."
       );
-    } else if (/ETIMEDOUT|ENOTFOUND|EAI_AGAIN|ECONNREFUSED|ECONNRESET/.test(message)) {
+    } else if (NETWORK_ERROR.test(message)) {
       console.error(
-        "\nПодсказка: нет связи с api.telegram.org.\n" +
-          "  Проверьте интернет. Если Telegram открывается только через VPN —\n" +
-          "  включите VPN и запустите бота снова."
+        "\nПодсказка: нет стабильной связи с api.telegram.org.\n" +
+          "  • включите VPN (системный, не только в браузере) и запустите start.bat снова;\n" +
+          "  • проверьте, что интернет работает и ничего не блокирует Telegram;\n" +
+          "  • можно просто запустить start.bat ещё раз — иногда со второго раза проходит."
       );
     }
 
