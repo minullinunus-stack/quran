@@ -17,6 +17,14 @@ bot/.env
 bot/storage.json
 bot/*.log
 
+# Бот на Cloudflare Workers
+worker/node_modules/
+worker/.data-kv/
+worker/.wrangler/
+worker/.dev.vars
+worker/.env
+worker/*.log
+
 # Прочее
 .DS_Store
 Thumbs.db

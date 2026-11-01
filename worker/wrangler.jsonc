@@ -1,0 +1,17 @@
+// Конфигурация Cloudflare Worker.
+// После `npx wrangler kv namespace create HATM_KV` подставьте выданный id ниже.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hatam-bot",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-31",
+  "observability": {
+    "enabled": true
+  },
+  "kv_namespaces": [
+    {
+      "binding": "HATM_KV",
+      "id": "REPLACE_WITH_KV_NAMESPACE_ID"
+    }
+  ]
+}
