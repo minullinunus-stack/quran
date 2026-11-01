@@ -3,6 +3,10 @@
 Версия бота для работы 24/7: Telegram присылает обновления по **вебхуку** на Cloudflare Worker,
 поэтому компьютер можно выключать — бот продолжает отвечать.
 
+- Воркер: https://hatam-bot.hatam-bot-worker.workers.dev
+- Вебхук: `https://hatam-bot.hatam-bot-worker.workers.dev/telegram`
+- KV: `HATM_KV` (`c7eb3798e05e42b3a40a7d29bab135a2`)
+
 ```
 Telegram ──webhook──▶ Cloudflare Worker ──▶ Cloudflare KV (данные, пользователи)
                             │
