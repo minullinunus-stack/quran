@@ -274,6 +274,10 @@ bot.action("noop", async (ctx) => {
   await ctx.answerCbQuery().catch(() => {});
 });
 
+bot.action(/^z:([me]):(\d+)$/, async (ctx) => {
+  await show(ctx, ui.adhkarView(ctx.match[1], Number(ctx.match[2])));
+});
+
 bot.action(/^q:(\d+)$/, async (ctx) => {
   await show(ctx, ui.surahList(Number(ctx.match[1])));
 });

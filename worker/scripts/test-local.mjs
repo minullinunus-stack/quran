@@ -214,6 +214,26 @@ const health = await worker.fetch(new Request("https://bot.example/"), env, { wa
 const healthBody = await health.json();
 check("health отвечает", health.status === 200 && healthBody.ok === true, healthBody);
 
+/* Утренние и вечерние поминания: все страницы через обработчик вебхука. */
+const { default: adhkar } = await import("../../shared/adhkar.cjs");
+for (const period of ["m", "e"]) {
+  const items = adhkar.adhkarItems(period);
+  for (let index = 0; index < items.length; index++) {
+    const response = await sendUpdate(callback("z:" + period + ":" + index));
+    const view = lastCall("editMessageText");
+    check("поминание " + period + ":" + index,
+      response.status === 200 && view && view.text.includes(items[index].ar) &&
+      view.text.includes(items[index].ru) && view.text.includes("Повторить: " + items[index].count) &&
+      view.text.length <= 4096 && view.reply_markup.inline_keyboard.flat().every(
+        (button) => Buffer.byteLength(button.callback_data, "utf8") <= 64));
+  }
+}
+for (const invalid of ["z:m:9999", "z:e:9999"]) {
+  await sendUpdate(callback(invalid));
+  check("несуществующее поминание " + invalid,
+    lastCall("sendMessage")?.text.includes("Не удалось найти"));
+}
+
 /* Итог */
 let failed = 0;
 for (const item of results) {

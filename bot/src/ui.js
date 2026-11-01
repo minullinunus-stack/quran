@@ -2,6 +2,7 @@
 
 const { Markup } = require("telegraf");
 const data = require("./data");
+const adhkar = require("../../shared/adhkar.cjs");
 const { escapeHtml, truncate, SAFE_LIMIT } = require("./format");
 
 const SURAHS_PER_PAGE = 12;
@@ -19,6 +20,7 @@ function menuText(name) {
     "🌙 <b>Ассаляму алейкум" + hello + "!</b>\n\n" +
     "📖 <b>Коран</b> — все 114 сур: арабский текст, перевод на русский и тафсир.\n" +
     "🕌 <b>Хадисы</b> — 40 хадисов имама ан-Навави с переводом.\n\n" +
+    "🌅 🌇 <b>Поминания</b> — утренние и вечерние азкары, как на сайте.\n\n" +
     "Выберите раздел 👇"
   );
 }
@@ -29,6 +31,8 @@ function menuKeyboard() {
       Markup.button.callback("📖 Коран", "q:0"),
       Markup.button.callback("🕌 Хадисы", "h:0"),
     ],
+    [Markup.button.callback("🌅 Утренние поминания", "z:m:0")],
+    [Markup.button.callback("🌇 Вечерние поминания", "z:e:0")],
     [Markup.button.callback("ℹ️ Помощь", "help")],
   ]);
 }
@@ -353,6 +357,8 @@ function helpText() {
     "и кнопку «Тафсир полностью».\n\n" +
     "🕌 <b>Хадисы</b>\n" +
     "40 хадисов имама ан-Навави: арабский текст и перевод. Листайте кнопками ⬅️ ➡️.\n\n" +
+    "🌅 🌇 <b>Поминания</b>\n" +
+    "В главном меню выберите утро или вечер. Читайте арабский текст и перевод, соблюдая указанное число повторений. Листайте кнопками ⬅️ ➡️.\n\n" +
     "<b>Команды:</b>\n" +
     "/start — главное меню\n" +
     "/help — эта справка\n\n" +
@@ -372,7 +378,13 @@ function helpKeyboard() {
   ]);
 }
 
+function adhkarView(period, index) {
+  const view = adhkar.adhkarView(period, index);
+  return view && { ...view, keyboard: Markup.inlineKeyboard(view.keyboard.inline_keyboard) };
+}
+
 module.exports = {
+  adhkarView,
   TOTAL_SURAHS,
   TOTAL_HADITHS,
   SURAHS_PER_PAGE,

@@ -6,6 +6,7 @@ const patterns = [
   [/^menu$/, "menu"], [/^help$/, "help"], [/^noop$/, "noop"],
   [/^q:\d+$/, "q"], [/^s:\d+$/, "s"], [/^a:\d+:\d+$/, "a"],
   [/^g:\d+:\d+$/, "g"], [/^h:\d+$/, "h"], [/^d:\d+(?::\d+)?$/, "d"],
+  [/^z:[me]:\d+$/, "z"],
   [/^t:\d+:\d+$/, "t"],
 ];
 
@@ -47,6 +48,11 @@ for (let p = 0; p < Math.ceil(42 / ui.HADITHS_PER_PAGE); p++) walk(ui.hadithList
 for (const h of data.hadiths) {
   const first = ui.hadithView(h.n, 0);
   for (let part = 0; part < (first ? first.parts : 0); part++) walk(ui.hadithView(h.n, part), "hadith " + h.n + ":" + part);
+}
+
+for (const period of ["m", "e"]) {
+  const items = require("../shared/adhkar.cjs").adhkarItems(period);
+  items.forEach((item, index) => walk(ui.adhkarView(period, index), "adhkar " + period + ":" + index));
 }
 
 console.log("кнопок проверено:", buttons);

@@ -136,6 +136,12 @@ async function handleCallback(cq, env, ctx) {
 
   if (!chatId) return;
 
+  const adhkarMatch = /^z:([me]):(\d+)$/.exec(data);
+  if (adhkarMatch) {
+    await show(env, cq, ui.adhkarView(adhkarMatch[1], Number(adhkarMatch[2])));
+    return;
+  }
+
   const meta = await store.loadMeta(env);
 
   if (data === "menu") {

@@ -1,3 +1,5 @@
+import adhkar from "../../shared/adhkar.cjs";
+export const adhkarView = adhkar.adhkarView;
 import { escapeHtml, truncate, SAFE_LIMIT } from "./format.js";
 
 export const SURAHS_PER_PAGE = 12;
@@ -20,6 +22,7 @@ export function menuText(name) {
     "🌙 <b>Ассаляму алейкум" + hello + "!</b>\n\n" +
     "📖 <b>Коран</b> — все 114 сур: арабский текст, перевод на русский и тафсир.\n" +
     "🕌 <b>Хадисы</b> — 40 хадисов имама ан-Навави с переводом.\n\n" +
+    "🌅 🌇 <b>Поминания</b> — утренние и вечерние азкары, как на сайте.\n\n" +
     "Выберите раздел 👇"
   );
 }
@@ -27,6 +30,8 @@ export function menuText(name) {
 export function menuKeyboard() {
   return keyboard([
     [button("📖 Коран", "q:0"), button("🕌 Хадисы", "h:0")],
+    [button("🌅 Утренние поминания", "z:m:0")],
+    [button("🌇 Вечерние поминания", "z:e:0")],
     [button("ℹ️ Помощь", "help")],
   ]);
 }
@@ -298,6 +303,8 @@ export function helpText(meta) {
     "и кнопку «Тафсир полностью».\n\n" +
     "🕌 <b>Хадисы</b>\n" +
     "40 хадисов имама ан-Навави: арабский текст и перевод. Листайте кнопками ⬅️ ➡️.\n\n" +
+    "🌅 🌇 <b>Поминания</b>\n" +
+    "В главном меню выберите утро или вечер. Читайте арабский текст и перевод, соблюдая указанное число повторений. Листайте кнопками ⬅️ ➡️.\n\n" +
     "<b>Команды:</b>\n" +
     "/start — главное меню\n" +
     "/help — эта справка\n\n" +
