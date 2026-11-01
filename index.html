@@ -13,6 +13,15 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<script>
+  // Telegram supplies these launch parameters when opening a Mini App.
+  (function () {
+    var launch = new URLSearchParams(location.hash.slice(1));
+    if (launch.has("tgWebAppPlatform") || launch.has("tgWebAppData")) {
+      document.documentElement.classList.add("telegram-mini-app");
+    }
+  })();
+</script>
 <style>
   :root {
     --bg: #0f1b18;
@@ -132,6 +141,7 @@
     font-weight: 700;
     text-decoration: none;
   }
+  .telegram-mini-app .telegram-link { display: none; }
   .telegram-link:hover { background: #1d6e99; }
   .telegram-link:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
   @media (max-width: 560px) { .telegram-link { width: 100%; margin-left: 0; } }
