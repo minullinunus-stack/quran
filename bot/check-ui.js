@@ -21,6 +21,12 @@ function walk(view, label) {
   for (const row of kb) {
     for (const btn of row) {
       buttons++;
+      if (btn.web_app) {
+        if (btn.web_app.url !== "https://hatam-mauve.vercel.app" || btn.callback_data) {
+          bad.push("неверная кнопка Mini App: " + label);
+        }
+        continue;
+      }
       const cb = btn.callback_data;
       if (!cb) { bad.push("нет callback_data: " + label + " / " + btn.text); continue; }
       if (Buffer.byteLength(cb, "utf8") > 64) tooLong.push(label + " -> " + cb);

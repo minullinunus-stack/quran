@@ -39,6 +39,17 @@ export function sendMessage(env, chatId, text, extra = {}) {
   });
 }
 
+export function setAppMenu(env, chatId) {
+  return call(env, "setChatMenuButton", {
+    chat_id: chatId,
+    menu_button: {
+      type: "web_app",
+      text: "📱 Хатм",
+      web_app: { url: "https://hatam-mauve.vercel.app" },
+    },
+  });
+}
+
 export function editMessageText(env, chatId, messageId, text, extra = {}) {
   return call(env, "editMessageText", {
     chat_id: chatId,

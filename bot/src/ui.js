@@ -27,6 +27,7 @@ function menuText(name) {
 
 function menuKeyboard() {
   return Markup.inlineKeyboard([
+    [Markup.button.webApp("📱 Открыть приложение Хатм", "https://hatam-mauve.vercel.app")],
     [
       Markup.button.callback("📖 Коран", "q:0"),
       Markup.button.callback("🕌 Хадисы", "h:0"),

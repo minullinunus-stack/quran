@@ -29,6 +29,7 @@ export function menuText(name) {
 
 export function menuKeyboard() {
   return keyboard([
+    [{ text: "📱 Открыть приложение Хатм", web_app: { url: "https://hatam-mauve.vercel.app" } }],
     [button("📖 Коран", "q:0"), button("🕌 Хадисы", "h:0")],
     [button("🌅 Утренние поминания", "z:m:0")],
     [button("🌇 Вечерние поминания", "z:e:0")],

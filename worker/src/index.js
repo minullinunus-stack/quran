@@ -6,6 +6,7 @@ import {
   editMessageText,
   getMe,
   sendMessage,
+  setAppMenu,
 } from "./telegram.js";
 
 const BOT_NAME = "Хатм";
@@ -56,6 +57,9 @@ async function handleMessage(message, env, ctx) {
   const command = commandMatch ? commandMatch[1].toLowerCase() : "";
 
   if (command === "start") {
+    if (message.chat.type === "private") {
+      await setAppMenu(env, chatId).catch((error) => console.error("Mini App menu:", error.description || error.message));
+    }
     await send(env, chatId, ui.menuText(from.first_name || ""), { reply_markup: ui.menuKeyboard() });
     return;
   }

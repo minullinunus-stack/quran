@@ -180,6 +180,12 @@ async function show(ctx, view) {
 /* ── Команды ── */
 
 bot.start(async (ctx) => {
+  if (ctx.chat.type === "private") {
+    await ctx.telegram.setChatMenuButton({
+      chatId: ctx.chat.id,
+      menuButton: { type: "web_app", text: "📱 Хатм", web_app: { url: "https://hatam-mauve.vercel.app" } },
+    }).catch((error) => console.error("Mini App menu:", error.description || error.message));
+  }
   const name = ctx.from.first_name || "";
   await ctx.reply(ui.menuText(name), {
     parse_mode: "HTML",

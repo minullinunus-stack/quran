@@ -126,6 +126,9 @@ check("/start отвечает", res.status === 200 && sent, res.status);
 check("приветствие «Ассаляму алейкум»", sent && sent.text.includes("Ассаляму алейкум, Ренат"));
 check("нет «Я — Хатм»", sent && !sent.text.includes("Я — Хатм"));
 check("есть кнопки меню", sent && sent.reply_markup.inline_keyboard.length >= 2);
+check("кнопка открывает сайт как Mini App", sent && sent.reply_markup.inline_keyboard.flat().some(
+  (button) => button.web_app?.url === "https://hatam-mauve.vercel.app" && !button.url && !button.callback_data));
+check("меню чата открывает Mini App", lastCall("setChatMenuButton")?.menu_button.web_app.url === "https://hatam-mauve.vercel.app");
 
 /* 2. Список сур */
 await sendUpdate(callback("q:0"));
