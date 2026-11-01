@@ -1,5 +1,5 @@
 /* Офлайн-кэш приложения «Хатм» */
-const VERSION = "hatam-v6";
+const VERSION = "hatam-v7";
 const CACHE = VERSION;
 
 const ASSETS = [
@@ -37,6 +37,8 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  // APK downloads should always use the latest published file.
+  if (url.pathname.endsWith(".apk")) return;
 
   // Страницы: сначала сеть, при отсутствии интернета — кэш.
   if (request.mode === "navigate") {
