@@ -5,7 +5,17 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.net.Uri
 import android.view.View
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.pm.PackageInfoCompat
+import org.json.JSONObject
+import java.net.URL
+import java.net.HttpURLConnection
+import java.util.concurrent.Executors
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
@@ -23,6 +33,10 @@ import androidx.webkit.WebViewAssetLoader
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
+    private lateinit var updateButton: Button
+    private val updateExecutor = Executors.newSingleThreadExecutor()
+    private var checkingUpdate = false
+    private var availableApk: String? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +91,21 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        setContentView(webView)
+        updateButton = Button(this).apply {
+            text = "Проверить обновления"
+            setOnClickListener {
+                val apk = availableApk
+                if (apk == null) checkForUpdates(true) else openApk(apk)
+            }
+        }
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(Color.parseColor("#0F1B18"))
+            addView(updateButton, LinearLayout.LayoutParams(-1, -2))
+            addView(webView, LinearLayout.LayoutParams(-1, 0, 1f))
+        }
+        setContentView(layout)
+        checkForUpdates(false)
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -98,11 +126,79 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        updateExecutor.shutdownNow()
         webView.destroy()
         super.onDestroy()
     }
 
+    private fun checkForUpdates(showResult: Boolean) {
+        if (checkingUpdate) return
+        checkingUpdate = true
+        updateButton.isEnabled = false
+        updateButton.text = "Проверяем обновления…"
+        updateExecutor.execute {
+            try {
+                val connection = URL(UPDATE_URL).openConnection() as HttpURLConnection
+                val release = try {
+                    connection.connectTimeout = 10000
+                    connection.readTimeout = 10000
+                    connection.useCaches = false
+                    connection.setRequestProperty("Cache-Control", "no-cache")
+                    check(connection.responseCode == 200)
+                    JSONObject(connection.inputStream.bufferedReader().use { it.readText() })
+                } finally {
+                    connection.disconnect()
+                }
+                val installed = PackageInfoCompat.getLongVersionCode(
+                    packageManager.getPackageInfo(packageName, 0)
+                )
+                val apk = release.getString("apkUrl")
+                val uri = Uri.parse(apk)
+                check(uri.scheme == "https" && uri.host == "hatam-mauve.vercel.app" &&
+                    uri.path?.startsWith("/downloads/") == true && uri.path?.endsWith(".apk") == true)
+                val newer = release.getLong("versionCode") > installed
+                runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    checkingUpdate = false
+                    updateButton.isEnabled = true
+                    availableApk = if (newer) apk else null
+                    updateButton.text = if (newer) "Обновить приложение" else "Проверить обновления"
+                    if (newer && showResult) {
+                        AlertDialog.Builder(this)
+                            .setTitle("Доступно обновление")
+                            .setMessage("Версия ${release.getString("versionName")}. Скачайте APK и установите поверх приложения — прогресс сохранится.")
+                            .setPositiveButton("Обновить") { _, _ -> openApk(apk) }
+                            .setNegativeButton("Позже", null).show()
+                    } else if (showResult) {
+                        Toast.makeText(this, "Установлена последняя версия", Toast.LENGTH_LONG).show()
+                    }
+                }
+            } catch (_: Exception) {
+                runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    checkingUpdate = false
+                    updateButton.isEnabled = true
+                    updateButton.text = if (availableApk != null) "Обновить приложение" else "Проверить обновления"
+                    if (showResult) Toast.makeText(this,
+                        "Не удалось проверить обновления. Проверьте подключение к интернету.",
+                        Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun openApk(url: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                addCategory(Intent.CATEGORY_BROWSABLE)
+            })
+        } catch (_: ActivityNotFoundException) {
+            Toast.makeText(this, "Для скачивания обновления нужен браузер", Toast.LENGTH_LONG).show()
+        }
+    }
+
     companion object {
+        private const val UPDATE_URL = "https://hatam-mauve.vercel.app/downloads/latest.json"
         private const val START_URL =
             "https://appassets.androidplatform.net/assets/www/index.html"
     }
