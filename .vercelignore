@@ -3,6 +3,7 @@ android/
 data/
 src/
 bot/
+worker/
 build.py
 README.md
 .gitignore
