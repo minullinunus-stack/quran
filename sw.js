@@ -1,5 +1,5 @@
 /* Офлайн-кэш приложения «Хатм» */
-const VERSION = "hatam-v4";
+const VERSION = "hatam-v5";
 const CACHE = VERSION;
 
 const ASSETS = [

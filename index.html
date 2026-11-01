@@ -101,6 +101,26 @@
     letter-spacing: 0.2px;
   }
 
+  .download-app {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    background: #ffd43b;
+    color: #16261f;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+  .download-app:hover { background: #ffe066; }
+  .download-app:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  @media (max-width: 560px) { .download-app { width: 100%; } }
+
   .install-btn {
     margin-left: auto;
     flex: 0 0 auto;
@@ -966,6 +986,7 @@
       </div>
       <button class="install-btn" type="button" id="install-btn" hidden>Установить</button>
     </div>
+    <a class="download-app" href="downloads/Hatam-1.0.0.apk" download="Hatam-1.0.0.apk" aria-label="Скачать приложение Хатм для Android, APK">⬇ Скачать приложение <span aria-hidden="true">· Android</span></a>
     <nav class="tabs" role="tablist" aria-label="Разделы">
       <button class="tab" type="button" role="tab" id="tab-hatm" data-view="hatm" aria-selected="true" aria-controls="view-hatm">Хатм</button>
       <button class="tab" type="button" role="tab" id="tab-quran" data-view="quran" aria-selected="false" aria-controls="view-quran">Коран</button>
