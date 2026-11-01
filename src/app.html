@@ -117,6 +117,25 @@
     min-height: 44px;
     box-sizing: border-box;
   }
+  .telegram-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin: 0 0 12px 8px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    background: #2381b4;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .telegram-link:hover { background: #1d6e99; }
+  .telegram-link:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  @media (max-width: 560px) { .telegram-link { width: 100%; margin-left: 0; } }
+
   .download-app:hover { background: #ffe066; }
   .download-app:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
   @media (max-width: 560px) { .download-app { width: 100%; } }
@@ -930,6 +949,7 @@
       <button class="install-btn" type="button" id="install-btn" hidden>Установить</button>
     </div>
     <a class="download-app" href="downloads/Hatam-1.0.0.apk" download="Hatam-1.0.0.apk" aria-label="Скачать приложение Хатм для Android, APK">⬇ Скачать приложение <span aria-hidden="true">· Android</span></a>
+    <a class="telegram-link" href="https://t.me/hatam_quran_bot" target="_blank" rel="noopener noreferrer">Открыть Telegram-бота ↗</a>
     <nav class="tabs" role="tablist" aria-label="Разделы">
       <button class="tab" type="button" role="tab" id="tab-hatm" data-view="hatm" aria-selected="true" aria-controls="view-hatm">Хатм</button>
       <button class="tab" type="button" role="tab" id="tab-quran" data-view="quran" aria-selected="false" aria-controls="view-quran">Коран</button>

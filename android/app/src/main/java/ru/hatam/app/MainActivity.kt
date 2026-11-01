@@ -1,6 +1,8 @@
 package ru.hatam.app
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -46,6 +48,28 @@ class MainActivity : AppCompatActivity() {
             }
 
             webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView,
+                    request: WebResourceRequest
+                ): Boolean {
+                    val uri = request.url
+                    if (uri.scheme == "https" && uri.host == "t.me") {
+                        try {
+                            startActivity(Intent(Intent.ACTION_VIEW, uri).apply {
+                                addCategory(Intent.CATEGORY_BROWSABLE)
+                            })
+                        } catch (_: ActivityNotFoundException) {
+                            android.widget.Toast.makeText(
+                                this@MainActivity,
+                                "Установите Telegram или браузер, чтобы открыть бота",
+                                android.widget.Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        return true
+                    }
+                    return false
+                }
+
                 override fun shouldInterceptRequest(
                     view: WebView,
                     request: WebResourceRequest
