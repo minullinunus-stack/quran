@@ -21,6 +21,10 @@ function walk(view, label) {
   for (const row of kb) {
     for (const btn of row) {
       buttons++;
+      if (btn.url) {
+        if (!btn.url.startsWith("https://")) bad.push("неверная ссылка: " + label);
+        continue;
+      }
       if (btn.web_app) {
         if (btn.web_app.url !== "https://hatam-mauve.vercel.app" || btn.callback_data) {
           bad.push("неверная кнопка Mini App: " + label);

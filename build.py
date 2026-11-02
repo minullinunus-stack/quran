@@ -7,6 +7,7 @@
 
 import os
 import sys
+import json
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(ROOT, "src", "app.html")
@@ -38,6 +39,13 @@ def main():
         # чтобы содержимое не могло закрыть тег <script>
         payload = payload.replace("</script", "<\\/script")
         html = html.replace(marker, "<script>\n" + payload + "\n</script>")
+
+    marker = "<!-- ADHKAR_DATA -->"
+    if marker not in html:
+        sys.exit("В src/app.html нет метки " + marker)
+    payload = json.dumps(json.loads(read(os.path.join(DATA, "adhkar.json"))),
+                         ensure_ascii=False, indent=2).replace("</script", "<\\/script")
+    html = html.replace(marker, "<script>\nwindow.ADHKAR_DATA = " + payload + ";\n</script>")
 
     with open(OUT, "w", encoding="utf-8", newline="\n") as f:
         f.write(html)

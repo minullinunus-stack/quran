@@ -853,6 +853,63 @@
     border-radius: 14px;
   }
 
+  /* ── Поминания ── */
+  .adhkar-switch {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .adhkar-switch .btn {
+    flex: 1 1 0;
+    text-align: center;
+  }
+
+  .adhkar-switch .btn.active {
+    color: #16261f;
+    background: var(--gold);
+    border-color: var(--gold);
+    font-weight: 600;
+  }
+
+  .adhkar-switch .btn.active:hover { filter: brightness(1.06); }
+
+  .adhkar-reps {
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--gold);
+    background: var(--gold-soft);
+    border: 1px solid rgba(212, 175, 55, 0.24);
+    border-radius: 8px;
+    padding: 3px 8px;
+  }
+
+  .hadith.read .adhkar-reps {
+    color: var(--done-strong);
+    background: rgba(63, 174, 125, 0.14);
+    border-color: rgba(63, 174, 125, 0.4);
+  }
+
+  .adhkar-note {
+    margin: 0 0 14px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  .adhkar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .adhkar-counter {
+    font-variant-numeric: tabular-nums;
+  }
+
   /* ── Уведомление ── */
   .toast {
     position: fixed;
@@ -965,6 +1022,7 @@
       <button class="tab" type="button" role="tab" id="tab-hatm" data-view="hatm" aria-selected="true" aria-controls="view-hatm">Хатм</button>
       <button class="tab" type="button" role="tab" id="tab-quran" data-view="quran" aria-selected="false" aria-controls="view-quran">Коран</button>
       <button class="tab" type="button" role="tab" id="tab-hadiths" data-view="hadiths" aria-selected="false" aria-controls="view-hadiths">Хадисы</button>
+      <button class="tab" type="button" role="tab" id="tab-adhkar" data-view="adhkar" aria-selected="false" aria-controls="view-adhkar">Поминания</button>
     </nav>
   </div>
 </header>
@@ -1080,6 +1138,47 @@
     <div class="hadith-list" id="hadith-list"></div>
   </section>
 
+  <!-- ══ ПОМИНАНИЯ ══ -->
+  <section class="view" id="view-adhkar" role="tabpanel" aria-labelledby="tab-adhkar" hidden>
+    <div class="lead">
+      <h2>Утренние и вечерние поминания</h2>
+      <p>По «Сборнику поминаний» Абдуллы ибн Абдуррахмана ас-Саада: арабский текст, перевод и число повторений.</p>
+    </div>
+
+    <p class="adhkar-note">Перевод: Регина Абдукадырова. Редакция: Абу Ислам аш-Шаркаси. Rayhan, 2025, раздел третий, с. 11–23. <a href="https://guidancetoislam.com/storage/contents/11322/sbornik-pominaniy-abdulla-ibn-abdurrakhman-as-saad.pdf#page=11" target="_blank" rel="noopener noreferrer">Открыть книгу (PDF)</a></p>
+    <div class="adhkar-switch" role="group" aria-label="Время поминаний">
+      <button class="btn active" type="button" data-period="m" aria-pressed="true">🌅 Утро</button>
+      <button class="btn" type="button" data-period="e" aria-pressed="false">🌇 Вечер</button>
+    </div>
+
+    <div class="card progress-card">
+      <div class="progress-top">
+        <span class="progress-label" id="adh-label">Прочитано поминаний</span>
+        <span class="progress-value" id="adh-value" aria-live="polite">0<small>%</small></span>
+      </div>
+      <div class="bar" role="progressbar" id="adh-bar" aria-labelledby="adh-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="bar-fill" id="adh-fill"></div>
+      </div>
+      <div class="progress-meta">
+        <span id="adh-done">Повторено: 0 из 0</span>
+        <span id="adh-left">Осталось: 0</span>
+      </div>
+    </div>
+
+    <p class="adhkar-note" id="adh-hint">Утренние поминания читают после фаджра и до восхода солнца.</p>
+
+    <div class="text-tools">
+      <span class="text-tools-label">Размер текста</span>
+      <div class="fs-group" role="group" aria-label="Размер текста">
+        <button class="fs-btn" type="button" data-fs="-1" aria-label="Уменьшить текст">A−</button>
+        <span class="fs-value" aria-live="polite">100%</span>
+        <button class="fs-btn" type="button" data-fs="1" aria-label="Увеличить текст">A+</button>
+      </div>
+    </div>
+
+    <div class="hadith-list" id="adhkar-list"></div>
+  </section>
+
   <p class="footer-note">
     Текст Корана: Quran Uthmani, перевод Э. Кулиева (api.alquran.cloud).<br>
     «Сорок хадисов»: перевод с арабского Абдуллы Нирши, издание подготовил Фарук Абу Хамид.<br>
@@ -1106,6 +1205,7 @@
 <!-- QURAN_DATA -->
 <!-- HADITHS_DATA -->
 <!-- TAFSIR_DATA -->
+<!-- ADHKAR_DATA -->
 <script>
 (function () {
   "use strict";
@@ -1113,12 +1213,15 @@
   var TOTAL_JUZ = 30;
   var K_HATM = "hatm.juz.v1";
   var K_HADITH = "hatm.hadiths.v1";
+  var K_ADHKAR = "hatm.adhkar.as-saad.v1";
+  var K_ADH_PERIOD = "hatm.adhkarPeriod.v1";
   var K_LAST = "hatm.lastSurah.v1";
   var K_FS = "hatm.fontScale.v1";
 
   var QURAN = window.QURAN_DATA || null;
   var HADITHS = window.HADITHS_DATA || null;
   var TAFSIR = window.TAFSIR_DATA || null;
+  var ADHKAR = window.ADHKAR_DATA || null;
 
   var toastEl = document.getElementById("toast");
   var toastTimer = null;
@@ -1593,12 +1696,239 @@
     hadList.appendChild(frag);
   }
 
+  /* ═══════════ ПОМИНАНИЯ ═══════════ */
+  var adhList = document.getElementById("adhkar-list");
+  var adhValue = document.getElementById("adh-value");
+  var adhFill = document.getElementById("adh-fill");
+  var adhBar = document.getElementById("adh-bar");
+  var adhDone = document.getElementById("adh-done");
+  var adhLeft = document.getElementById("adh-left");
+  var adhHint = document.getElementById("adh-hint");
+  var adhTabs = Array.prototype.slice.call(document.querySelectorAll(".adhkar-switch .btn"));
+
+  var ADH_HINTS = {
+    m: "Утренние поминания читают после фаджра и до восхода солнца.",
+    e: "Вечерние поминания читают после асра и до заката солнца."
+  };
+
+  function todayKey() {
+    var d = new Date();
+    return d.getFullYear() + "-" +
+      ("0" + (d.getMonth() + 1)).slice(-2) + "-" +
+      ("0" + d.getDate()).slice(-2);
+  }
+
+  var adhSaved = loadJSON(K_ADHKAR, {});
+  var adhCounts = adhSaved && adhSaved.date === todayKey() && adhSaved.counts
+    ? adhSaved.counts
+    : { m: {}, e: {} };
+  if (!adhCounts.m) adhCounts.m = {};
+  if (!adhCounts.e) adhCounts.e = {};
+  if (!adhCounts.daily) adhCounts.daily = {};
+
+  var adhSavedPeriod = loadJSON(K_ADH_PERIOD, { p: "m" });
+  var adhPeriod = adhSavedPeriod.p === "e" ? "e" : "m";
+
+  function saveAdhCounts() {
+    saveJSON(K_ADHKAR, { date: todayKey(), counts: adhCounts });
+  }
+
+  function adhItems(period) {
+    if (!ADHKAR || !ADHKAR.items) return [];
+    return ADHKAR.items.filter(function (item) {
+      return period === "e" ? item.type !== 1 : item.type !== 2;
+    });
+  }
+
+  function adhCount(period, n) {
+    var item = ADHKAR.items.find(function (entry) { return entry.n === n; });
+    var key = item && item.daily ? "daily" : period;
+    var value = adhCounts[key] ? Number(adhCounts[key][n]) : 0;
+    return value > 0 ? value : 0;
+  }
+
+  function renderAdhProgress() {
+    var items = adhItems(adhPeriod);
+    var done = 0;
+    for (var i = 0; i < items.length; i++) {
+      if (adhCount(adhPeriod, items[i].n) >= items[i].count) done++;
+    }
+    var total = items.length;
+    var percent = total ? Math.round((done / total) * 100) : 0;
+    adhValue.innerHTML = percent + "<small>%</small>";
+    adhFill.style.width = percent + "%";
+    adhBar.setAttribute("aria-valuenow", String(percent));
+    adhDone.textContent = "Повторено: " + done + " из " + total;
+    adhLeft.textContent = "Осталось: " + (total - done);
+  }
+
+  function setAdhCount(n, value, card, button, reset, reps) {
+    var item = ADHKAR.items.find(function (entry) { return entry.n === n; });
+    var key = item && item.daily ? "daily" : adhPeriod;
+    if (value > 0) adhCounts[key][n] = value;
+    else delete adhCounts[key][n];
+    saveAdhCounts();
+
+    var done = value >= reps;
+    card.classList.toggle("read", done);
+    button.textContent = done
+      ? "Готово ✓ (" + value + " из " + reps + ")"
+      : "Повторить · " + value + " из " + reps;
+    button.classList.toggle("mark", done);
+    reset.hidden = value <= 0;
+    renderAdhProgress();
+  }
+
+  function buildAdhkar() {
+    adhList.innerHTML = "";
+
+    if (!ADHKAR || !ADHKAR.items) {
+      adhList.innerHTML = '<div class="empty">Не удалось загрузить поминания (нет файла data/adhkar.js)</div>';
+      return;
+    }
+
+    var frag = document.createDocumentFragment();
+
+    adhItems(adhPeriod).forEach(function (item) {
+      var card = document.createElement("article");
+      card.className = "hadith adhkar";
+      card.dataset.n = String(item.n);
+
+      var toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "hadith-toggle";
+      toggle.setAttribute("aria-expanded", "false");
+
+      var num = document.createElement("span");
+      num.className = "hadith-num";
+      num.textContent = String(item.n);
+
+      var name = document.createElement("span");
+      name.className = "hadith-name";
+      name.textContent = item.title;
+
+      var reps = document.createElement("span");
+      reps.className = "adhkar-reps";
+      reps.textContent = "×" + item.count + (item.daily ? " в день" : "");
+
+      var chev = document.createElement("span");
+      chev.className = "chevron";
+      chev.setAttribute("aria-hidden", "true");
+
+      toggle.appendChild(num);
+      toggle.appendChild(name);
+      toggle.appendChild(reps);
+      toggle.appendChild(chev);
+
+      var body = document.createElement("div");
+      body.className = "hadith-body";
+      body.hidden = true;
+
+      if (item.ar) {
+        var ar = document.createElement("div");
+        ar.className = "hadith-ar";
+        ar.lang = "ar";
+        ar.dir = "rtl";
+        ar.textContent = item.ar;
+        body.appendChild(ar);
+      }
+
+      var ru = document.createElement("p");
+      ru.className = "hadith-ru";
+      ru.textContent = item.ru;
+      body.appendChild(ru);
+
+      var reference = document.createElement("p");
+      reference.className = "adhkar-note";
+      reference.textContent = "В книге: № " + item.sourceNumber + ", с. " + item.page + "." + (item.note ? " " + item.note : "");
+      body.appendChild(reference);
+
+      var actions = document.createElement("div");
+      actions.className = "adhkar-actions";
+
+      var counter = document.createElement("button");
+      counter.type = "button";
+      counter.className = "btn small adhkar-counter";
+
+      var reset = document.createElement("button");
+      reset.type = "button";
+      reset.className = "btn small ghost";
+      reset.textContent = "Сбросить";
+
+      var value = adhCount(adhPeriod, item.n);
+      if (value >= item.count) {
+        counter.textContent = "Готово ✓ (" + value + " из " + item.count + ")";
+        counter.classList.add("mark");
+        card.classList.add("read");
+      } else {
+        counter.textContent = "Повторить · " + value + " из " + item.count;
+      }
+      reset.hidden = value <= 0;
+
+      actions.appendChild(counter);
+      actions.appendChild(reset);
+      body.appendChild(actions);
+
+      toggle.addEventListener("click", function () {
+        var open = card.classList.toggle("open");
+        body.hidden = !open;
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+
+      counter.addEventListener("click", function () {
+        var current = adhCount(adhPeriod, item.n);
+        if (current >= item.count) {
+          showToast("Счётчик уже заполнен — нажмите «Сбросить», чтобы начать заново");
+          return;
+        }
+        current += 1;
+        setAdhCount(item.n, current, card, counter, reset, item.count);
+        if (current >= item.count) showToast("Поминание " + item.n + " выполнено ✓");
+      });
+
+      reset.addEventListener("click", function () {
+        setAdhCount(item.n, 0, card, counter, reset, item.count);
+        showToast("Счётчик сброшен");
+      });
+
+      card.appendChild(toggle);
+      card.appendChild(body);
+      frag.appendChild(card);
+    });
+
+    adhList.appendChild(frag);
+  }
+
+  function setAdhPeriod(period, push) {
+    adhPeriod = period === "e" ? "e" : "m";
+    saveJSON(K_ADH_PERIOD, { p: adhPeriod });
+
+    adhTabs.forEach(function (btn) {
+      var active = btn.dataset.period === adhPeriod;
+      btn.classList.toggle("active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+
+    adhHint.textContent = ADH_HINTS[adhPeriod];
+    buildAdhkar();
+    renderAdhProgress();
+
+    if (push && location.hash.indexOf("adhkar") !== 0) location.hash = "adhkar";
+  }
+
+  adhTabs.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setAdhPeriod(btn.dataset.period, false);
+    });
+  });
+
   /* ═══════════ Роутинг ═══════════ */
   var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
   var views = {
     hatm: document.getElementById("view-hatm"),
     quran: document.getElementById("view-quran"),
-    hadiths: document.getElementById("view-hadiths")
+    hadiths: document.getElementById("view-hadiths"),
+    adhkar: document.getElementById("view-adhkar")
   };
 
   function activate(view, push) {
@@ -1640,6 +1970,32 @@
       if (card && !card.classList.contains("open")) card.querySelector(".hadith-toggle").click();
       return;
     }
+    if (view === "adhkar" && parts[1]) {
+      activate("adhkar", false);
+      if (parts[1] === "evening" || parts[1] === "e") {
+        setAdhPeriod("e", false);
+        return;
+      }
+      if (parts[1] === "morning" || parts[1] === "m") {
+        setAdhPeriod("m", false);
+        return;
+      }
+      var adhNumber = Number(parts[1]);
+      var target = null;
+      if (ADHKAR && ADHKAR.items) {
+        for (var i = 0; i < ADHKAR.items.length; i++) {
+          if (ADHKAR.items[i].n === adhNumber) { target = ADHKAR.items[i]; break; }
+        }
+      }
+      if (target) {
+        setAdhPeriod(target.type === 2 ? "e" : "m", false);
+        var adhCard = adhList.querySelector('.adhkar[data-n="' + adhNumber + '"]');
+        if (adhCard && !adhCard.classList.contains("open")) {
+          adhCard.querySelector(".hadith-toggle").click();
+        }
+      }
+      return;
+    }
     activate(view, false);
   }
 
@@ -1651,6 +2007,7 @@
   buildSurahList();
   buildHadiths();
   renderHadithProgress();
+  setAdhPeriod(adhPeriod, false);
   updateContinue();
   applyFontScale();
   route();

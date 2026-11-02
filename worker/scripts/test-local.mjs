@@ -228,7 +228,7 @@ for (const period of ["m", "e"]) {
       response.status === 200 && view && view.text.includes(items[index].ar) &&
       view.text.includes(items[index].ru) && view.text.includes("Повторить: " + items[index].count) &&
       view.text.length <= 4096 && view.reply_markup.inline_keyboard.flat().every(
-        (button) => Buffer.byteLength(button.callback_data, "utf8") <= 64));
+        (button) => button.url ? button.url.startsWith("https://") : Buffer.byteLength(button.callback_data, "utf8") <= 64));
   }
 }
 for (const invalid of ["z:m:9999", "z:e:9999"]) {
