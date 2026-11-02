@@ -27,12 +27,27 @@ android {
         applicationId = "ru.hatam.app"
         minSdk = 23
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 3
+        versionName = "1.2.0"
+    }
+
+    val distributionKeystore = System.getenv("HATAM_KEYSTORE")
+    if (!distributionKeystore.isNullOrBlank()) {
+        signingConfigs {
+            create("distribution") {
+                storeFile = file(distributionKeystore)
+                storePassword = System.getenv("HATAM_STORE_PASSWORD")
+                keyAlias = System.getenv("HATAM_KEY_ALIAS") ?: "hatam"
+                keyPassword = System.getenv("HATAM_KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
         release {
+            if (!distributionKeystore.isNullOrBlank()) {
+                signingConfig = signingConfigs.getByName("distribution")
+            }
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

@@ -198,7 +198,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val UPDATE_URL = "https://hatam-mauve.vercel.app/downloads/latest.json"
+        private const val UPDATE_URL = "https://hatam-mauve.vercel.app/downloads/latest-release.json"
         private const val START_URL =
             "https://appassets.androidplatform.net/assets/www/index.html"
     }
